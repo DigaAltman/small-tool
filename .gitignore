@@ -1,0 +1,6 @@
+*.md
+.idea/
+*/target
+target
+*.class
+*.iml
