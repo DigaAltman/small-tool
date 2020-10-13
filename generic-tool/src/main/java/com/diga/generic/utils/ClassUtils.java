@@ -9,12 +9,10 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -205,7 +203,7 @@ public class ClassUtils {
      * @return
      */
     public static <T> T newProxyByClass(Class<T> proxyClass, InvocationHandler handler) throws Exception {
-        return new ClassProxy<T>(handler, proxyClass).newInstance(false);
+        return new ClassProxy<T>(handler, proxyClass).newInstance();
     }
 
 
@@ -220,22 +218,21 @@ public class ClassUtils {
      * @throws Exception
      */
     public static <T> T newProxyByInstance(T instance, InvocationHandler handler) throws Exception {
-        return new InstanceProxy<T>(handler, instance).newInstance(true);
+        return new InstanceProxy<T>(handler, instance).newInstance();
     }
 
 
     public static void main(String[] args) throws Exception {
-        ClassUtils classUtils = ClassUtils.newProxyByClass(ClassUtils.class, new InvocationHandler() {
-            @Override
-            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                if (method.getName().equals("getClasses")) {
-                    return Sets.newHashSet(Integer.class, Double.class);
-                }
-                return method.invoke(proxy, args);
+        ClassUtils classUtils = ClassUtils.newProxyByClass(ClassUtils.class, (proxy, method, args1) -> {
+            if (method.getName().equals("getClasses")) {
+                return Sets.newHashSet(Integer.class, Double.class);
             }
+            return method.invoke(proxy, args1);
         });
 
     }
 
 }
+
+
 

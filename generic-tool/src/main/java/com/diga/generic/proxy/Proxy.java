@@ -2,6 +2,7 @@ package com.diga.generic.proxy;
 
 import com.diga.generic.utils.ReflexUtils;
 import com.google.common.io.Files;
+import com.sun.istack.internal.NotNull;
 import javassist.*;
 
 import java.io.File;
@@ -11,7 +12,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -36,7 +36,8 @@ public abstract class Proxy implements Serializable {
     /**
      * 用户传入的具体增强的类的代码信息
      */
-    protected InvocationHandler h;
+    @NotNull
+    protected final InvocationHandler h;
 
     /**
      * 动态生成的类方法的业务核心逻辑, 针对返回结果进行切换
@@ -46,7 +47,6 @@ public abstract class Proxy implements Serializable {
 
 
     public Proxy(InvocationHandler h) {
-        Objects.requireNonNull(h);
         this.h = h;
     }
 
@@ -93,7 +93,7 @@ public abstract class Proxy implements Serializable {
      * @param fName
      * @return
      */
-    private CtField createField(CtClass proxy, Class fType, String fName) {
+    protected CtField createField(CtClass proxy, Class fType, String fName) {
         CtField ctField = null;
         try {
             ctField = new CtField(classPool.get(fType.getName()), fName, proxy);
@@ -122,32 +122,19 @@ public abstract class Proxy implements Serializable {
     /**
      * 模式, true是 类 代理, false是 接口 代理
      *
-     * @param model
      * @param <T>
      * @return
      * @throws Exception
      */
-    public synchronized <T> T newInstance(boolean model) throws Exception {
+    public synchronized <T> T newInstance() throws Exception {
         CtClass proxy = classPool.makeClass(proxyClassName + classNumber++);
 
         Class proxyClass = getProxyClass();
         if (ReflexUtils.isFinal(proxyClass)) {
-            throw new IllegalArgumentException("路径名称为:\t" + proxyClass.getName() + "的类是被 final 修饰的,不能被代理 !!");
+            throw new InstantiationException("路径名称为:\t" + proxyClass.getName() + "的类是被 final 修饰的,不能被代理 !!");
         }
 
-        if (!model) {
-            // 用户选择的是接口类型的代理, 但是传入的不是接口类. 我们还是可以代理的.
-            // 只不过这里需要做一个小小的判断
-            if (proxyClass.isInterface()) {
-                proxy.setInterfaces(new CtClass[]{classPool.get(proxyClass.getName())});
-            } else {
-                proxy.setSuperclass(classPool.get(proxyClass.getName()));
-            }
-        } else {
-            proxy.setSuperclass(classPool.get(proxyClass.getName()));
-            // Object Object;
-            proxy.addField(createField(proxy, proxyClass, proxyClass.getSimpleName()));
-        }
+        handleExtends(proxy);
 
         // 添加 InvocationHandler handler 字段
         String handlerFieldName = "handler";
@@ -180,11 +167,7 @@ public abstract class Proxy implements Serializable {
         field.setAccessible(true);
         field.set(instance, h);
 
-        if (model) {
-            Field proxyField = newClass.getDeclaredField(proxyClass.getSimpleName());
-            proxyField.setAccessible(true);
-            proxyField.set(instance, getInstance());
-        }
+        setInstance(instance);
 
         // 补充: 方法赋值操作
         for (int i = 0; i < methods.size(); i++) {
@@ -195,6 +178,17 @@ public abstract class Proxy implements Serializable {
         }
 
         return instance;
+    }
+
+    protected abstract <T> void setInstance(T instance) throws NoSuchFieldException, IllegalAccessException;
+
+    /**
+     * 处理继承关系
+     *
+     * @param proxy
+     */
+    protected  void handleExtends(CtClass proxy) throws NotFoundException, CannotCompileException {
+        proxy.setSuperclass(classPool.get(getProxyClass().getName()));
     }
 
     /**
@@ -210,7 +204,7 @@ public abstract class Proxy implements Serializable {
     /**
      * 获取代理类信息
      */
-    protected abstract Class getProxyClass();
+    protected abstract Class<?> getProxyClass();
 
     /**
      * 获取代理类逻辑信息
@@ -219,6 +213,6 @@ public abstract class Proxy implements Serializable {
      * @param methodName
      * @return
      */
-    protected abstract String getMethodBody(Class returnType, String methodName);
+    protected abstract String getMethodBody(Class<?> returnType, String methodName);
 
 }

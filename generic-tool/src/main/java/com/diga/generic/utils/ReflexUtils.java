@@ -71,5 +71,35 @@ public class ReflexUtils {
     }
 
 
+    /**
+     * 当前类是否为接口
+     * @param beanClass
+     * @return
+     */
+    public static boolean isInterface(Class<?> beanClass) {
+        return beanClass.isInterface();
+    }
 
+    /**
+     * 当前方法是否为接口方法
+     * @param method
+     * @return
+     */
+    public static boolean isInterface(Method method) {
+        return Modifier.isInterface(method.getModifiers());
+    }
+
+    /**
+     * 当前类是否为抽象类
+     */
+    public static boolean isAbstract(Class<?> beanClass) {
+        return Modifier.isAbstract(beanClass.getModifiers());
+    }
+
+    /**
+     * 当前方法是否为抽象方法
+     */
+    public static boolean isAbstract(Method method) {
+        return Modifier.isAbstract(method.getModifiers());
+    }
 }
