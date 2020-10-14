@@ -3,9 +3,7 @@ package com.diga.generic.utils;
 import com.diga.generic.func.IntAndElementAndCollectionToReturnElementFunction;
 import com.diga.generic.func.IntAndElementAndCollectionToReturnVoidFunction;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 import java.util.function.BinaryOperator;
 
 /**
@@ -103,4 +101,28 @@ public class CollectionUtils {
         return lastReturn;
     }
 
+
+    /**
+     * 转换 Collection 类
+     *
+     * @param value
+     * @param type
+     * @return
+     */
+    public static Collection to(Collection value, Class<?> type) {
+        if (List.class.isAssignableFrom(type)) {
+            List list = new LinkedList();
+            forEach(value, (index, data, dataList) -> list.add(index, data));
+            value = list;
+        }
+
+        if (Set.class.isAssignableFrom(type)) {
+            Set set = new LinkedHashSet();
+            forEach(value, (index, data, dataList) -> set.add(data));
+            value = set;
+        }
+
+        // 以后不够自己补充
+        return value;
+    }
 }

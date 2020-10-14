@@ -1,5 +1,6 @@
 package com.diga.generic.proxy;
 
+import com.diga.generic.utils.CollectionUtils;
 import com.diga.generic.utils.ReflexUtils;
 import com.google.common.io.Files;
 import com.sun.istack.internal.NotNull;
@@ -140,7 +141,21 @@ public abstract class Proxy implements Serializable {
         String handlerFieldName = "handler";
         proxy.addField(createField(proxy, InvocationHandler.class, handlerFieldName));
 
-        List<Method> methods = Arrays.stream(proxyClass.getMethods())
+
+        // 3.1 获取所有方法
+        Method[] allMethod = proxyClass.getMethods();
+
+        // 3.2 取出静态方法, 不管它是不是final,native
+//        List<Method> staticMethod = Arrays.stream(allMethod).filter(m -> ReflexUtils.isStatic(m)).collect(Collectors.toList());
+//        for (Method method : staticMethod) {
+//            CtMethod ctMethod = createMethod(proxy, method);
+//            // return ($r) this.handler.invoke(%s, %s, $args);
+//            method.getParam
+//            String src = proxyClass.getName() + "." + method.getName();
+//        }
+
+
+        List<Method> methods = Arrays.stream(allMethod)
                 .filter(method -> !ReflexUtils.isStatic(method) && !ReflexUtils.isNative(method) && !ReflexUtils.isFinal(method)).collect(Collectors.toList());
 
 
@@ -187,7 +202,7 @@ public abstract class Proxy implements Serializable {
      *
      * @param proxy
      */
-    protected  void handleExtends(CtClass proxy) throws NotFoundException, CannotCompileException {
+    protected void handleExtends(CtClass proxy) throws NotFoundException, CannotCompileException {
         proxy.setSuperclass(classPool.get(getProxyClass().getName()));
     }
 

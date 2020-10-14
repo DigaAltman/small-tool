@@ -12,6 +12,7 @@ import java.lang.reflect.InvocationHandler;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -20,6 +21,24 @@ import java.util.jar.JarFile;
 
 
 public class ClassUtils {
+
+    /**
+     * 基本值集合类型
+     */
+    private static Set<Class<?>> basicValueSet = Sets.newHashSet(
+            int.class, Integer.class,
+            double.class, Double.class,
+            float.class, Float.class,
+            long.class, Long.class,
+            short.class, Short.class,
+            boolean.class, Boolean.class,
+            byte.class, Byte.class,
+            Date.class, String.class
+    );
+
+    public static boolean isValueType(Class<?> typeClass) {
+        return basicValueSet.contains(typeClass);
+    }
 
     /**
      * 尝试基于类全路径名称进行类的初始化, 如果初始化失败, 则会返回
@@ -224,12 +243,11 @@ public class ClassUtils {
 
     public static void main(String[] args) throws Exception {
         ClassUtils classUtils = ClassUtils.newProxyByClass(ClassUtils.class, (proxy, method, args1) -> {
-            if (method.getName().equals("getClasses")) {
-                return Sets.newHashSet(Integer.class, Double.class);
-            }
             return method.invoke(proxy, args1);
         });
 
+        Class driverClass = classUtils.tryForName("com.mysql.jdbc.Driver");
+        System.out.println(driverClass);
     }
 
 }
