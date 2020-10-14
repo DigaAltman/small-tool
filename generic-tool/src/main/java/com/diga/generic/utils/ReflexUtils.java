@@ -1,11 +1,25 @@
 package com.diga.generic.utils;
 
 import java.lang.reflect.*;
+import java.util.HashMap;
+import java.util.Properties;
 
 /**
  * 反射工具包, 为了简化反射操作
  */
 public class ReflexUtils {
+
+    public static <T> T conversionValue(String val, Class<T> returnClass) {
+        PropUtils.KV kv = new PropUtils.KV(new Properties());
+        HashMap<String, String> tempMap = new HashMap<>();
+        tempMap.put("temp", val);
+        kv.setMap(tempMap);
+        T convertValue = kv.get("temp", returnClass);
+
+        tempMap.clear();
+        return convertValue;
+    }
+
 
     /**
      * 尝试实例化类, 失败返回null

@@ -1,5 +1,6 @@
 package com.diga.generic.utils;
 
+import lombok.Setter;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.MapUtils;
 
@@ -68,6 +69,7 @@ public class PropUtils {
 
 
     public static class KV {
+        @Setter
         private Map<String, String> map;
 
         public KV(Properties properties) {

@@ -1,17 +1,28 @@
 package com.diga.db.core;
 
+import com.diga.db.core.factory.ResultMapFactory;
+import com.diga.db.result.ResultRowHandler;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 @Data
 public class DB {
+
 
     /**
      * 用于与数据库交互的 Connection 对象
      */
     private Connection connection;
+
+    /**
+     * 行结果处理器
+     */
+    private ResultRowHandler resultRowHandler;
 
 
     /**
@@ -26,6 +37,7 @@ public class DB {
             e.printStackTrace();
         }
     }
+
 
     /**
      * 构建 PreparedStatement 的方法
@@ -121,6 +133,33 @@ public class DB {
             e.printStackTrace();
         }
         return resultSet;
+    }
+
+
+    /**
+     * 查询多条数据库记录并做处理
+     *
+     * @param sql  查询语句
+     * @param args 查询语句需要使用到的参数
+     * @param <T>
+     * @return
+     * @throws Exception
+     */
+    public <T extends Serializable> List<T> selectList(String sql, Class<T> returnClass, Object... args) {
+        List<T> result = new ArrayList();
+        ResultSet rs = select(sql, args);
+
+        try {
+            // 循环进行 一对一映射 处理
+            while (rs.next()) {
+                T oneToOneResult = resultRowHandler.handle(resultSetToMap(rs), returnClass);
+                result.add(oneToOneResult);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
 }

@@ -119,9 +119,4 @@ public class log {
         }
     }
 
-    public static void main(String[] args) {
-        XmlQuery query = new XmlQuery(new File("D:\\project\\back\\202010\\small-tool\\generic-tool\\src\\main\\resources\\dep.xml"));
-        query.queryForSelector("build").forEach(q -> System.out.println(q.html()));
-    }
-
 }
