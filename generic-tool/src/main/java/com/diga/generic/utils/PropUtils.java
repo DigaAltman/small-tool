@@ -183,6 +183,7 @@ public class PropUtils {
          * 基于build的cache简单缓存
          */
         private static Map<Class, Object> buildTypeCache = new HashMap();
+        private static Map<Class, Collection> buildListTypeCache = new HashMap();
 
         public static void clearBuildCache() {
             buildTypeCache.clear();
@@ -227,9 +228,7 @@ public class PropUtils {
                             if (types.length != 1) {
                                 throw new IllegalArgumentException("字段: " + f.getName() + "的泛型数量不为1");
                             }
-                            Class typeClass = (Class) types[0];
-                            value = buildCollection(typeClass);
-                            value = CollectionUtils.to((Collection) value, type);
+                            value = buildCollection((Class<? extends Collection>) type, (Class) types[0]);
                         } else {
                             value = build(type);
                         }
@@ -248,20 +247,31 @@ public class PropUtils {
             return instance;
         }
 
-        public <T> Collection<T> buildCollection(Class<T> clazz) {
+        public <T> Collection<T> buildCollection(Class<? extends Collection> collectionClazz, Class<T> clazz) {
+
+            // cache 断开 StackError
+            Collection collection = buildListTypeCache.get(clazz);
+            if (collection != null) {
+                return collection;
+            }
+
             String prefix = StringUtils.lowerFirstCase(clazz.getSimpleName());
             Field[] fields = clazz.getDeclaredFields();
             Map<String, T> listMap = new HashMap();
+
+            /*
+             * 这里只能解决那些 properties 中存在的字段, 对于 properties 中不存在的字段不能解决
+             */
+
             for (Map.Entry<String, String> entry : map.entrySet()) {
                 String k = entry.getKey();
 
-                if(!k.startsWith(prefix)) {
+                if (!k.startsWith(prefix)) {
                     continue;
                 }
 
                 for (Field f : fields) {
                     String fPrefix = prefix + "." + f.getName() + ".";
-
                     if (k.startsWith(fPrefix)) {
                         // 后缀
                         String remain = k.substring(fPrefix.length());
@@ -276,7 +286,8 @@ public class PropUtils {
                             }
 
                             try {
-                                BeanUtils.copyProperty(instance, f.getName(), get(k, f.getType()));
+                                Object val = get(k, f.getType());
+                                BeanUtils.copyProperty(instance, f.getName(), val);
                             } catch (IllegalAccessException e) {
                                 e.printStackTrace();
                             } catch (InvocationTargetException e) {
@@ -287,8 +298,36 @@ public class PropUtils {
                 }
             }
 
-
-            return listMap.values();
+            Collection val = CollectionUtils.to(listMap.values(), collectionClazz);
+            CollectionUtils.forEach(val, (index, data, list) -> {
+                // 填充特殊字段, 比如 List, 类字段
+                Field[] fieldList = data.getClass().getDeclaredFields();
+                for (Field field : fieldList) {
+                    Class<?> fType = field.getType();
+                    Object value = null;
+                    if (Collection.class.isAssignableFrom(fType)) {
+                        // 1. 取出泛型
+                        Type[] types = ReflexUtils.getFieldParameterizedType(field);
+                        if (types.length != 1) {
+                            throw new IllegalArgumentException("字段: " + field.getName() + "的泛型数量不为1");
+                        }
+                        value = buildCollection((Class<? extends Collection>) fType, (Class) types[0]);
+                    } else if (!ClassUtils.isValueType(fType)) {
+                        value = build(fType);
+                    } else {
+                        continue;
+                    }
+                    try {
+                        BeanUtils.copyProperty(data, field.getName(), value);
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            buildListTypeCache.put(clazz, val);
+            return val;
         }
 
 
