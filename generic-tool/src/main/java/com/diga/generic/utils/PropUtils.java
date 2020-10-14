@@ -182,11 +182,21 @@ public class PropUtils {
         /**
          * 基于build的cache简单缓存
          */
-        private static Map<Class, Object> buildTypeCache = new HashMap();
+        private static Map<Class, Object> buildOneTypeCache = new HashMap();
         private static Map<Class, Collection> buildListTypeCache = new HashMap();
 
-        public static void clearBuildCache() {
-            buildTypeCache.clear();
+        /**
+         * 清除 build 的 cache 简单缓存
+         */
+        public static void clearBuildOneCache() {
+            buildOneTypeCache.clear();
+        }
+
+        /**
+         * 清除 build 的 cache 复杂缓存
+         */
+        public static void clearBuildListCache() {
+            buildListTypeCache.clear();
         }
 
         /**
@@ -198,7 +208,7 @@ public class PropUtils {
          * @return 返回转换后的实体类
          */
         public <T> T build(String prefix, Class<T> clazz) {
-            Object cache = buildTypeCache.get(clazz);
+            Object cache = buildOneTypeCache.get(clazz);
             // 如果这个类已经被build过了
             if (cache != null) {
                 return (T) cache;
@@ -207,7 +217,7 @@ public class PropUtils {
             T instance = null;
             try {
                 instance = clazz.newInstance();
-                buildTypeCache.put(clazz, instance);
+                buildOneTypeCache.put(clazz, instance);
                 Field[] fields = clazz.getDeclaredFields();
 
                 for (Field f : fields) {
@@ -247,6 +257,15 @@ public class PropUtils {
             return instance;
         }
 
+
+        /**
+         * 将 properties 中的元素直接映射到集合中, 泛型中表示的元素必须存在无参数构造器
+         *
+         * @param collectionClazz 集合类型
+         * @param clazz           集合中的泛型
+         * @param <T>
+         * @return
+         */
         public <T> Collection<T> buildCollection(Class<? extends Collection> collectionClazz, Class<T> clazz) {
 
             // cache 断开 StackError
@@ -331,6 +350,15 @@ public class PropUtils {
         }
 
 
+        /**
+         * 基于简单类型的映射, 无需多复杂. 只要类名称
+         *
+         * @see com.diga.generic.test.entity.Course##main(String[]) 案例代码
+         *
+         * @param clazz
+         * @param <T>
+         * @return
+         */
         public <T> T build(Class<T> clazz) {
             return build(StringUtils.lowerFirstCase(clazz.getSimpleName()), clazz);
         }

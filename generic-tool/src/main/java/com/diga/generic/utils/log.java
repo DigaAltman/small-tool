@@ -3,6 +3,7 @@ package com.diga.generic.utils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -119,10 +120,8 @@ public class log {
     }
 
     public static void main(String[] args) {
-        for (int i = 0; i < 100; i++) {
-            log.info("log");
-            System.out.println("println");
-        }
+        XmlQuery query = new XmlQuery(new File("D:\\project\\back\\202010\\small-tool\\generic-tool\\src\\main\\resources\\dep.xml"));
+        query.queryForSelector("build").forEach(q -> System.out.println(q.html()));
     }
 
 }

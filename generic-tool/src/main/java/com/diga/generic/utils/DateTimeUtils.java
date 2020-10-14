@@ -492,47 +492,6 @@ public class DateTimeUtils {
 		return day+"";
 	}
 
-	public static void main(String args[]) {
-		String dateStr1 = "2011-07-03 4:50:00";
-		String dateStr2 = "2012-07-03 5:15:00";
-		String dateStr3 = "2012-07-03 6:15:00";
-		String dateStr4 = "2012-07-03 7:15:00";
-		String dateStr5 = "2012-07-03 8:15:00";
-		//String dateStr6= "2012-06-09 9:00:00";
-		String dateStr6 = "2012-07-03 9:16:00";
-		String dateStr7 = "2012-07-03 10:15:00";
-		String format = "yyyy-MM-dd HH:mm:ss";
-		Date date = stringToDate(dateStr1, format);
-		Date handleDate = GetDCMatchEndTime(date, 1200000);
-		System.out.println(dateToString(handleDate));
-
-		date = stringToDate(dateStr2, format);
-		handleDate = GetDCMatchEndTime(date, 600000);
-		System.out.println(dateToString(handleDate));
-
-		date = stringToDate(dateStr3, format);
-		handleDate = GetDCMatchEndTime(date, 600000);
-		System.out.println(dateToString(handleDate));
-
-		date = stringToDate(dateStr4, format);
-		handleDate = GetDCMatchEndTime(date, 600000);
-		System.out.println(dateToString(handleDate));
-
-		date = stringToDate(dateStr5, format);
-		handleDate = GetDCMatchEndTime(date, 600000);
-		System.out.println(dateToString(handleDate));
-
-		date = stringToDate(dateStr6, format);
-		handleDate = GetDCMatchEndTime(date, 600000);
-		System.out.println(dateToString(handleDate));
-
-		date = stringToDate(dateStr7, format);
-		handleDate = GetDCMatchEndTime(date, 600000);
-		System.out.println(dateToString(handleDate));
-//		String dateText="12-30 02:30";
-//		System.out.println(DateTools.dateToString(strToDateDafueYear(dateText,new Date())));
-	}
-
 	/**
 	 * 检查给定时间是否在指定时间区间
 	 * @param startTime

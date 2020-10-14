@@ -240,16 +240,6 @@ public class ClassUtils {
         return new InstanceProxy<T>(handler, instance).newInstance();
     }
 
-
-    public static void main(String[] args) throws Exception {
-        ClassUtils classUtils = ClassUtils.newProxyByClass(ClassUtils.class, (proxy, method, args1) -> {
-            return method.invoke(proxy, args1);
-        });
-
-        Class driverClass = classUtils.tryForName("com.mysql.jdbc.Driver");
-        System.out.println(driverClass);
-    }
-
 }
 
 
