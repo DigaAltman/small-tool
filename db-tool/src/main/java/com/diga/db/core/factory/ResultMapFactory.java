@@ -25,4 +25,19 @@ public interface ResultMapFactory {
      * @return
      */
     ResultMap build(Class<? extends Serializable> clazz);
+
+    /**
+     * 基于实体类生成 ResultMap, 不会生成缓存
+     *
+     * @param clazz
+     * @return
+     */
+    ResultMap build(Class<? extends Serializable> clazz, boolean status);
+
+    /**
+     * 添加缓存
+     *
+     * @param resultMap
+     */
+    void putResultMap(String id, ResultMap resultMap);
 }

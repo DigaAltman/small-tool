@@ -5,7 +5,6 @@ import com.diga.db.core.factory.DefaultResultMapFactory;
 import com.diga.db.core.factory.ResultMapFactory;
 import com.diga.db.result.DefaultResultRowHandler;
 import com.diga.db.result.ResultRowHandler;
-import com.sun.xml.internal.txw2.output.ResultFactory;
 import lombok.Data;
 
 import java.sql.Connection;

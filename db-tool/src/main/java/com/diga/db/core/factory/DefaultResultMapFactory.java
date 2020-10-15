@@ -137,7 +137,35 @@ public class DefaultResultMapFactory implements ResultMapFactory {
 
         // 如果不存在, 才去对类进行解析
         if (resultMap == null) {
-            resultMap = doBuild(clazz);
+            resultMap = doBuild(clazz, true);
+        }
+
+        return resultMap;
+    }
+
+    /**
+     * 基于实体类生成 ResultMap, 不会生成缓存
+     *
+     * @param clazz
+     * @param status
+     * @return
+     */
+    @Override
+    public ResultMap build(Class<? extends Serializable> clazz, boolean status) {
+        // 判断 clazz 是否合法
+        if (clazz == null || clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) {
+            throw new IllegalArgumentException("无法识别的实体类, 请确保类名称为" + clazz.getName() + "的类是实体类");
+        }
+
+        // 默认 id 为 类的全路径名称
+        String defaultResultMapId = clazz.getName();
+
+        // 从彻底完成的缓存中取出对象
+        ResultMap resultMap = getResultMap(defaultResultMapId);
+
+        // 如果不存在, 才去对类进行解析
+        if (resultMap == null) {
+            resultMap = doBuild(clazz, false);
         }
 
         return resultMap;
@@ -150,7 +178,7 @@ public class DefaultResultMapFactory implements ResultMapFactory {
      * @param clazz
      * @return
      */
-    private ResultMap doBuild(Class<? extends Serializable> clazz) {
+    private ResultMap doBuild(Class<? extends Serializable> clazz, boolean status) {
         // 默认 id 为 类的缩写(首字母小写) + Map, 比如: com.example.pojo.User -> userMap
         String defaultResultMapId = clazz.getName();
 
@@ -163,7 +191,7 @@ public class DefaultResultMapFactory implements ResultMapFactory {
         }
 
         // 创建 ResultMap, 此时 ResultMap 中的 List<Result> 还没有数据
-        resultMap = new ResultMap(defaultResultMapId, clazz.getName());
+        resultMap = new ResultMap(defaultResultMapId, clazz);
 
         // 开始处理 ResultMap 下的 字段映射
         List<Result> resultList = resultMap.getResultList();
@@ -256,8 +284,12 @@ public class DefaultResultMapFactory implements ResultMapFactory {
             result.setAssociation(associationMap).setCollection(collectionMap);
         }
 
-        // 此时, 整个 ResultMap 已经填充完毕了. 我们在将它放入到 彻底完成的缓存中就可以了
-        putResultMap(defaultResultMapId, resultMap);
+        if(status) {
+
+            // 此时, 整个 ResultMap 已经填充完毕了. 我们在将它放入到 彻底完成的缓存中就可以了
+            putResultMap(defaultResultMapId, resultMap);
+            
+        }
 
         // 删除临时缓存中的 key 为 clazz 的 ResultMap
         removeEasyMap(defaultResultMapId);

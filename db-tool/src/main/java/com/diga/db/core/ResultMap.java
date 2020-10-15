@@ -3,12 +3,11 @@ package com.diga.db.core;
 import com.diga.generic.utils.ClassUtils;
 import com.diga.generic.utils.ReflexUtils;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-import java.math.BigDecimal;
-import java.sql.Blob;
+import java.io.Serializable;
 import java.util.*;
 
 @Data
@@ -23,15 +22,16 @@ public class ResultMap {
     /**
      * 返回结果映射容器对应的类全路径名称
      */
-    private String type;
+    private Class<? extends Serializable> type;
 
     /**
      * 字段对应的子字段
      */
+    @ToString.Exclude
     private List<Result> resultList = new ArrayList();
 
 
-    public ResultMap(String id, String type) {
+    public ResultMap(String id, Class<? extends Serializable> type) {
         this.id = id;
         this.type = type;
     }
@@ -100,14 +100,11 @@ public class ResultMap {
         Object instance = null;
         try {
             // 获取 resultMap 的返回值类型
-            Class resultType = ClassUtils.tryForName(type);
+            instance = ReflexUtils.tryInstance(type);
 
-            if (resultType == null) {
+            if (instance == null) {
                 throw new IllegalArgumentException("类 " + type + " 无法实例化, 必须提供无参构造器");
             }
-
-            // 简单初始化
-            instance = resultType.newInstance();
 
             boolean setStatus = false;
 

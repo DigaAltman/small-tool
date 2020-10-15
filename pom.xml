@@ -11,6 +11,8 @@
         <module>generic-tool</module>
         <module>db-tool</module>
         <module>test</module>
+        <module>mapper-tool</module>
+        <module>orm-tool</module>
     </modules>
     <packaging>pom</packaging>
 

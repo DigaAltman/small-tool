@@ -4,13 +4,17 @@ import com.diga.db.core.DB;
 import com.diga.db.core.Result;
 import com.diga.db.core.ResultMap;
 import com.diga.db.core.factory.DefaultResultMapFactory;
+import com.diga.db.core.factory.ResultMapFactory;
 import com.diga.db.entity.Course;
+import com.diga.db.entity.Student;
 import com.diga.db.factory.DBFactory;
 import com.diga.db.pojo.FoodCategory;
 import com.diga.db.pojo.FoodCategoryMap;
+import com.diga.db.result.DefaultResultRowHandler;
 import com.diga.generic.utils.ClassUtils;
 import com.diga.generic.utils.CollectionUtils;
 import com.diga.generic.utils.PropUtils;
+import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -101,7 +105,7 @@ public class TestDBFactory {
         DB db = dbFactory.getDB();
         ResultMap resultMap = new ResultMap();
         resultMap.setId("selfMap");
-        resultMap.setType("com.diga.db.pojo.FoodCategoryMap");
+        resultMap.setType(FoodCategoryMap.class);
         List<Result> resultList = resultMap.getResultList();
         resultList.add(new Result("id", "id", long.class));
         resultList.add(new Result("name", "name", String.class));
@@ -136,6 +140,60 @@ public class TestDBFactory {
         CollectionUtils.forEach(courseList, (index, data, dataList) -> System.out.println(data));
         System.out.println(System.currentTimeMillis() - start + "ms");
         db.close();
+    }
+
+
+    @Test
+    public void testHandleList() {
+        Course math1 = new Course();
+        math1.setCourseId(1);
+        math1.setCourseName("数学");
+
+        Student s1 = new Student();
+        s1.setStudentId(1);
+        s1.setStudentName("张大胖V1.0");
+
+        math1.setStudentList(Lists.newArrayList(s1));
+
+        Course math2 = new Course();
+        math2.setCourseId(1);
+        math2.setCourseName("数学");
+
+        Student s2 = new Student();
+        s2.setStudentId(2);
+        s2.setStudentName("张大胖V2.0");
+
+        math2.setStudentList(Lists.newArrayList(s2));
+
+        Course lang1 = new Course();
+        lang1.setCourseId(2);
+        lang1.setCourseName("语文");
+
+
+        Student s3 = new Student();
+        s3.setStudentId(3);
+        s3.setStudentName("张大胖V3.0");
+
+        lang1.setStudentList(Lists.newArrayList(s3));
+
+
+        Course lang2 = new Course();
+        lang2.setCourseId(2);
+        lang2.setCourseName("语文");
+
+        Student s4 = new Student();
+        s4.setStudentId(4);
+        s4.setStudentName("张大胖V4.0");
+
+        lang2.setStudentList(Lists.newArrayList(s4));
+
+
+        ResultMapFactory resultMapFactory = dbFactory.getResultMapFactory();
+        DefaultResultRowHandler rowHandler = new DefaultResultRowHandler(resultMapFactory);
+        List<Course> courseList = rowHandler.handleList(Lists.newArrayList(math1, math2, lang1, lang2), Course.class);
+
+        CollectionUtils.forEach(courseList, (index, data, dataList) -> System.out.println(data));
+
     }
 
 }
