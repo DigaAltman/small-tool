@@ -1,6 +1,5 @@
 package com.diga.db.core;
 
-import com.diga.db.core.factory.ResultMapFactory;
 import com.diga.db.result.ResultRowHandler;
 import lombok.Data;
 
@@ -47,7 +46,7 @@ public class DB {
      * @return
      */
     private PreparedStatement buildPrepareStatement(String sql, Object... args) {
-        if (sql != null && !sql.trim().equals("")) {
+        if (sql == null || "".equals(sql.trim())) {
             throw new IllegalArgumentException("无效的SQL语句");
         }
         PreparedStatement preparedStatement = null;
@@ -139,27 +138,100 @@ public class DB {
     /**
      * 查询多条数据库记录并做处理
      *
-     * @param sql  查询语句
-     * @param args 查询语句需要使用到的参数
+     * @param sql         查询语句
+     * @param returnClass 返回的实体类类型
+     * @param args        查询语句需要使用到的参数
      * @param <T>
      * @return
      * @throws Exception
      */
-    public <T extends Serializable> List<T> selectList(String sql, Class<T> returnClass, Object... args) {
+    public <T> List<T> selectList(String sql, Class<T> returnClass, Object... args) {
         List<T> result = new ArrayList();
         ResultSet rs = select(sql, args);
 
         try {
             // 循环进行 一对一映射 处理
             while (rs.next()) {
-                T oneToOneResult = resultRowHandler.handle(resultSetToMap(rs), returnClass);
+                T oneToOneResult = resultRowHandler.handleOne(resultSetToMap(rs), returnClass);
                 result.add(oneToOneResult);
             }
+
+            // 进行 一对多映射 处理
+            result = resultRowHandler.handleList(result, returnClass);
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         return result;
     }
+
+
+    /**
+     * 查询多条数据库记录并做处理
+     *
+     * @param sql       查询语句
+     * @param resultMap 查询语句需要使用到的返回结果集
+     * @param args      参数
+     * @param <T>
+     * @return
+     */
+    public <T> List<T> selectList(String sql, ResultMap resultMap, Object... args) {
+        List<T> result = new ArrayList();
+        // 判断当前的 sql 是否为null, 或者是空字符串
+        if (sql != null && !sql.trim().equals("")) {
+            try {
+                // 获取原生的 ResultSet 返回结果
+                ResultSet rs = buildPrepareStatement(sql, args).executeQuery();
+
+                // 循环进行 一对一映射 处理
+                while (rs.next()) {
+                    T oneToOneResult = resultRowHandler.handleOne(resultSetToMap(rs), resultMap);
+                    result.add(oneToOneResult);
+                }
+
+                // 进行 一对多映射 处理
+                result = resultRowHandler.handleList(result, resultMap);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 查询一条数据
+     *
+     * @param sql
+     * @param resultMap
+     * @param args
+     * @param <T>
+     * @return
+     */
+    public <T extends Serializable> T selectOne(String sql, ResultMap resultMap, Object... args) {
+        List<T> res = selectList(sql, resultMap, args);
+        if (res.size() > 1) {
+            throw new IllegalArgumentException("返回的结果不止一条");
+        }
+        return res.get(0);
+    }
+
+    /**
+     * 查询一条数据
+     *
+     * @param sql
+     * @param returnClass
+     * @param args
+     * @param <T>
+     * @return
+     */
+    public <T> T selectOne(String sql, Class<T> returnClass, Object... args) {
+        List<T> res = selectList(sql, returnClass, args);
+        if (res.size() > 1) {
+            throw new IllegalArgumentException("返回的结果不止一条");
+        }
+        return res.get(0);
+    }
+
 
 }

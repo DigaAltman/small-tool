@@ -9,9 +9,11 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
+import java.math.BigDecimal;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.sql.Blob;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
@@ -33,7 +35,8 @@ public class ClassUtils {
             short.class, Short.class,
             boolean.class, Boolean.class,
             byte.class, Byte.class,
-            Date.class, String.class
+            Date.class, String.class,
+            BigDecimal.class, Blob.class
     );
 
     public static boolean isValueType(Class<?> typeClass) {

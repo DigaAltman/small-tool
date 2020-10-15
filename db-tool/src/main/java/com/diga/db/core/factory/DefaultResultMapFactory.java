@@ -235,6 +235,7 @@ public class DefaultResultMapFactory implements ResultMapFactory {
             // 如果它是 集合 类型,那么我们就需要获取它的泛型
             if (Collection.class.isAssignableFrom(columnClassType)) {
                 Type[] types = ReflexUtils.getFieldParameterizedType(field);
+
                 // 如果没有声明泛型， 则作为 Map 处理
                 if (null == types) {
                     return getEasyMap("java.util.Map");

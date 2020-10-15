@@ -1,6 +1,7 @@
 package com.diga.db.core;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
@@ -30,6 +31,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
+@NoArgsConstructor
 public class Result {
     /**
      * SQL 返回结果的字段名称
@@ -60,4 +62,15 @@ public class Result {
      * 一对多 关联映射
      */
     protected ResultMap collection;
+
+    public Result(String column, String property) {
+        this.column = column;
+        this.property = property;
+    }
+
+    public Result(String column, String property, Class<?> type) {
+        this.column = column;
+        this.property = property;
+        this.type = type;
+    }
 }
