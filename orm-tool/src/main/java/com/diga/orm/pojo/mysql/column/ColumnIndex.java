@@ -1,4 +1,4 @@
-package com.diga.orm.pojo.mysql.table;
+package com.diga.orm.pojo.mysql.column;
 
 import com.diga.db.annotation.ResultBean;
 import com.diga.db.core.Result;
@@ -14,7 +14,7 @@ import java.util.List;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class TableIndex implements Serializable {
+public class ColumnIndex implements Serializable {
     /**
      * 表名称
      */
@@ -82,9 +82,9 @@ public class TableIndex implements Serializable {
     private String indexComment;
 
 
-    @ResultBean(id = "com.diga.orm.pojo.mysql.table.TableIndex")
+    @ResultBean(id = "com.diga.orm.pojo.mysql.column.ColumnIndex")
     public ResultMap tableIndex() {
-        ResultMap resultMap = new ResultMap("", TableIndex.class);
+        ResultMap resultMap = new ResultMap("", ColumnIndex.class);
         List<Result> resultList = resultMap.getResultList();
         resultList.add(new Result().setColumn("Table").setProperty("table"));
         resultList.add(new Result().setColumn("Non_unique").setProperty("nonUnique"));

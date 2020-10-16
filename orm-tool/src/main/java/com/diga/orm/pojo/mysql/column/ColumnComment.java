@@ -1,4 +1,4 @@
-package com.diga.orm.pojo.mysql.table;
+package com.diga.orm.pojo.mysql.column;
 
 import com.diga.db.annotation.ResultBean;
 import com.diga.db.core.Result;
@@ -17,7 +17,7 @@ import java.util.List;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class TableFieldComment implements Serializable {
+public class ColumnComment implements Serializable {
 
     /**
      * 字段名称
@@ -39,9 +39,9 @@ public class TableFieldComment implements Serializable {
      */
     private String columnKey;
 
-    @ResultBean(id = "com.diga.orm.pojo.mysql.table.TableFieldComment")
+    @ResultBean(id = "com.diga.orm.pojo.mysql.column.ColumnComment")
     public ResultMap tableFieldComment() {
-        ResultMap resultMap = new ResultMap("", TableFieldComment.class);
+        ResultMap resultMap = new ResultMap("", ColumnComment.class);
         List<Result> resultList = resultMap.getResultList();
         resultList.add(new Result().setColumn("column_name").setProperty("columnName"));
         resultList.add(new Result().setColumn("column_comment").setProperty("columnComment"));
