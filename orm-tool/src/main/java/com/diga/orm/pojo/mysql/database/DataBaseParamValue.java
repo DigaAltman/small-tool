@@ -19,12 +19,10 @@ public class DataBaseParamValue implements Serializable {
 
     @ResultBean(id = "com.diga.orm.pojo.mysql.database.DataBaseParamValue")
     public ResultMap dataBaseParamValue() {
-        ResultMap resultMap = new ResultMap("", DataBaseParamValue.class);
-
+        ResultMap resultMap = new ResultMap(null, DataBaseParamValue.class);
         List<Result> resultList = resultMap.getResultList();
         resultList.add(new Result("Variable_name", "key"));
         resultList.add(new Result("Value", "value"));
-
         return resultMap;
     }
 }

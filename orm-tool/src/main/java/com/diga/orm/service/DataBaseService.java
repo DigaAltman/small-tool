@@ -2,7 +2,7 @@ package com.diga.orm.service;
 
 import com.diga.generic.utils.CollectionUtils;
 import com.diga.orm.pojo.mysql.database.DataBaseParamValue;
-import com.diga.orm.repository.DataBaseRepository;
+import com.diga.orm.repository.mysql.DataBaseRepository;
 import com.diga.orm.vo.DataBaseDetail;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +19,7 @@ public class DataBaseService {
     @Autowired
     private DataBaseRepository dataBaseRepository;
 
+
     /**
      * 获取数据库的所有参数信息
      *
@@ -28,8 +29,18 @@ public class DataBaseService {
         return dataBaseRepository.getDataBaseDetail();
     }
 
+
     /**
-     * 获取数据库的详细信息
+     * 获取所有数据库, 包括数据表
+     *
+     * @return
+     */
+    public List<DataBaseDetail> getAllDataBase() {
+        return dataBaseRepository.getAllDataBase();
+    }
+
+    /**
+     * 获取当前数据库的详细信息
      *
      * @return
      */
@@ -44,6 +55,7 @@ public class DataBaseService {
         dataBaseDetail.setCharset(MapUtils.getString(map, "character_set_database"));
         dataBaseDetail.setEngine(MapUtils.getString(map, "default_storage_engine"));
         dataBaseDetail.setVersion(MapUtils.getString(map, "version"));
+        dataBaseDetail.setPort(MapUtils.getInteger(map, "port"));
 
         Map<String, BigDecimal> sizeMap = dataBaseRepository.getDataSizeAndIndexSize();
         dataBaseDetail.setDataSize(sizeMap.get("dataSize"));
@@ -69,4 +81,6 @@ public class DataBaseService {
         dataBaseDetail.setDataDir(MapUtils.getString(map, "datadir"));
         return dataBaseDetail;
     }
+
+
 }

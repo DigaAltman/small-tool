@@ -57,12 +57,11 @@ public class ResultMap {
      * @param resultMapSet
      */
     private void getDependencies(ResultMap resultMap, Set<ResultMap> resultMapSet) {
-        // 这里不能直接使用 resultMapSet.contains(resultMap) ,因为Set的contains方法,会出现 StackException
+        // 这里不能直接使用 resultMapSet.contains(resultMap) ,因为 Set 的 contains 方法,会出现 StackException
         if (!resultMapSet.contains(resultMap)) {
             resultMapSet.add(resultMap);
 
             List<Result> resultList = resultMap.childMapResult();
-
 
             resultList.stream()
                     .filter(f -> f.collection != null || f.association != null)

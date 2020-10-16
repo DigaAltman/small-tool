@@ -3,6 +3,7 @@ package com.diga.orm.pojo.mysql.table;
 import com.diga.db.annotation.ResultBean;
 import com.diga.db.core.Result;
 import com.diga.db.core.ResultMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,6 +16,7 @@ import java.util.List;
  * SELECT COLUMN_NAME AS column_name, column_comment, column_type, column_key FROM information_schema.COLUMNS WHERE table_name = #{tableName}
  */
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TableFieldComment implements Serializable {
 
     /**

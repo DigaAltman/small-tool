@@ -3,6 +3,7 @@ package com.diga.orm.pojo.mysql.table;
 import com.diga.db.annotation.ResultBean;
 import com.diga.db.core.Result;
 import com.diga.db.core.ResultMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,6 +13,7 @@ import java.util.List;
  * 表结构信息, 通过调用 show columns from #{tableName} 得到的结果对应的实体类
  */
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TableStructure implements Serializable {
     /**
      * 字段名称

@@ -3,6 +3,7 @@ package com.diga.orm.pojo.mysql.table;
 import com.diga.db.annotation.ResultBean;
 import com.diga.db.core.Result;
 import com.diga.db.core.ResultMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -10,7 +11,11 @@ import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * SELECT * FROM information_schema.tables WHERE TABLE_SCHEMA != 'information_schema';
+ */
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TableDetail implements Serializable {
     /**
      * 数据表名称
@@ -89,36 +94,43 @@ public class TableDetail implements Serializable {
     private Date checkTime;
 
     /**
+     * 表字符集
+     */
+    private String charset;
+
+    /**
      * 表备注
      */
     private String comment;
 
     /**
-     * 字符集
+     * 建表补充
      */
-    private String collation;
+    private String options;
 
 
     @ResultBean(id = "com.diga.orm.pojo.mysql.table.TableDetail")
     public ResultMap tableDetail() {
         ResultMap resultMap = new ResultMap("", TableDetail.class);
         List<Result> resultList = resultMap.getResultList();
-        resultList.add(new Result().setColumn("Name").setProperty("tableName"));
-        resultList.add(new Result().setColumn("Engine").setProperty("engine"));
-        resultList.add(new Result().setColumn("Version").setProperty("version"));
-        resultList.add(new Result().setColumn("Row_format").setProperty("rowFormat"));
-        resultList.add(new Result().setColumn("Rows").setProperty("rows"));
-        resultList.add(new Result().setColumn("Avg_row_length").setProperty("avgRowLength"));
-        resultList.add(new Result().setColumn("Data_length").setProperty("dataLength"));
-        resultList.add(new Result().setColumn("Max_data_length").setProperty("maxDataLength"));
-        resultList.add(new Result().setColumn("Index_length").setProperty("indexLength"));
-        resultList.add(new Result().setColumn("Data_free").setProperty("dataFree"));
-        resultList.add(new Result().setColumn("Auto_increment").setProperty("autoIncrement"));
-        resultList.add(new Result().setColumn("Create_time").setProperty("createTime"));
-        resultList.add(new Result().setColumn("Update_time").setProperty("updateTime"));
-        resultList.add(new Result().setColumn("Check_time").setProperty("checkTime"));
-        resultList.add(new Result().setColumn("Comment").setProperty("comment"));
-        resultList.add(new Result().setColumn("Collation").setProperty("collation"));
+
+        resultList.add(new Result().setColumn("TABLE_NAME").setProperty("tableName"));
+        resultList.add(new Result().setColumn("ENGINE").setProperty("engine"));
+        resultList.add(new Result().setColumn("VERSION").setProperty("version"));
+        resultList.add(new Result().setColumn("ROW_FORMAT").setProperty("rowFormat"));
+        resultList.add(new Result().setColumn("TABLE_ROWS").setProperty("rows"));
+        resultList.add(new Result().setColumn("AVG_ROW_LENGTH").setProperty("avgRowLength"));
+        resultList.add(new Result().setColumn("DATA_LENGTH").setProperty("dataLength"));
+        resultList.add(new Result().setColumn("MAX_DATA_LENGTH").setProperty("maxDataLength"));
+        resultList.add(new Result().setColumn("INDEX_LENGTH").setProperty("indexLength"));
+        resultList.add(new Result().setColumn("DATA_FREE").setProperty("dataFree"));
+        resultList.add(new Result().setColumn("AUTO_INCREMENT").setProperty("autoIncrement"));
+        resultList.add(new Result().setColumn("CREATE_TIME").setProperty("createTime"));
+        resultList.add(new Result().setColumn("UPDATE_TIME").setProperty("updateTime"));
+        resultList.add(new Result().setColumn("CHECK_TIME").setProperty("checkTime"));
+        resultList.add(new Result().setColumn("TABLE_COLLATION").setProperty("charset"));
+        resultList.add(new Result().setColumn("TABLE_COMMENT").setProperty("comment"));
+        resultList.add(new Result().setColumn("CREATE_OPTIONS").setProperty("options"));
 
         return resultMap;
     }

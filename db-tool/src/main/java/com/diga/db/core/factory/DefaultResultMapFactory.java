@@ -2,6 +2,7 @@ package com.diga.db.core.factory;
 
 import com.diga.db.annotation.Column;
 import com.diga.db.annotation.Id;
+import com.diga.db.annotation.Transient;
 import com.diga.db.core.Result;
 import com.diga.db.core.ResultMap;
 import com.diga.generic.utils.ReflexUtils;
@@ -207,44 +208,48 @@ public class DefaultResultMapFactory implements ResultMapFactory {
             // 获取当前字段
             Field field = fieldList[i];
 
-            // 当前字段的类型
-            Class columnClassType = field.getType();
+            // 如果 Transient 注解存在...
+            if (field.getAnnotation(Transient.class) == null) {
 
-            // 当前字段名称
-            String prototype = field.getName();
+                // 当前字段的类型
+                Class columnClassType = field.getType();
 
-            // 转驼峰后的 sql 字段名称
-            String column = StringUtils.reverseHump(prototype);
+                // 当前字段名称
+                String prototype = field.getName();
 
-            // 是否为主键
-            boolean primaryKey = false;
+                // 转驼峰后的 sql 字段名称
+                String column = StringUtils.reverseHump(prototype);
 
-            // 获取字段上的列注解, 如果用户配置了 @Column 注解,则 数据表字段名称 取 @Column 注解中的 value 值
-            Column col = field.getAnnotation(Column.class);
-            if (col != null) {
-                column = col.value();
+                // 是否为主键
+                boolean primaryKey = false;
+
+                // 获取字段上的列注解, 如果用户配置了 @Column 注解,则 数据表字段名称 取 @Column 注解中的 value 值
+                Column col = field.getAnnotation(Column.class);
+                if (col != null) {
+                    column = col.value();
+                }
+
+                // 获取字段上的 @Id 注解, 如果用户配置了 @Id 注解,则表示这个字段是 ResultMap 中的 id 字段
+                Id primary = field.getAnnotation(Id.class);
+
+                if (primary != null) {
+                    // 因为存在 @Id("course_id") 的情况, 如果 @Id 中配置了列名称,我们就不使用 @Column 中的名称了
+                    column = primary.value().trim().equals("") ? column : primary.value();
+                    primaryKey = true;
+                }
+
+                // 构建一个 Result 然后填充进去就可以了
+                Result result = new Result();
+                result.setColumn(column).setType(columnClassType).setPrimary(primaryKey).setProperty(prototype);
+
+
+                // 如果这个字段不属于基本类型, 那就放到 特殊类型字段集合中, 最后统一进行处理
+                if (!basicTypeSet.parallelStream().anyMatch(t -> t.isAssignableFrom(columnClassType))) {
+                    needSpecialHandleFieldList.add(field);
+                }
+
+                resultList.add(result);
             }
-
-            // 获取字段上的 @Id 注解, 如果用户配置了 @Id 注解,则表示这个字段是 ResultMap 中的 id 字段
-            Id primary = field.getAnnotation(Id.class);
-
-            if (primary != null) {
-                // 因为存在 @Id("course_id") 的情况, 如果 @Id 中配置了列名称,我们就不使用 @Column 中的名称了
-                column = primary.value().trim().equals("") ? column : primary.value();
-                primaryKey = true;
-            }
-
-            // 构建一个 Result 然后填充进去就可以了
-            Result result = new Result();
-            result.setColumn(column).setType(columnClassType).setPrimary(primaryKey).setProperty(prototype);
-
-
-            // 如果这个字段不属于基本类型, 那就放到 特殊类型字段集合中, 最后统一进行处理
-            if (!basicTypeSet.parallelStream().anyMatch(t -> t.isAssignableFrom(columnClassType))) {
-                needSpecialHandleFieldList.add(field);
-            }
-
-            resultList.add(result);
         }
 
         /*
@@ -284,11 +289,11 @@ public class DefaultResultMapFactory implements ResultMapFactory {
             result.setAssociation(associationMap).setCollection(collectionMap);
         }
 
-        if(status) {
+        if (status) {
 
             // 此时, 整个 ResultMap 已经填充完毕了. 我们在将它放入到 彻底完成的缓存中就可以了
             putResultMap(defaultResultMapId, resultMap);
-            
+
         }
 
         // 删除临时缓存中的 key 为 clazz 的 ResultMap

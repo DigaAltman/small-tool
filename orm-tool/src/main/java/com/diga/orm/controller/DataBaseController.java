@@ -30,4 +30,10 @@ public class DataBaseController {
         return ApiResponse.success(paramValueList);
     }
 
+    @GetMapping("/list")
+    public ApiResponse list() {
+        List<DataBaseDetail> allDataBaseList = dataBaseService.getAllDataBase();
+        return ApiResponse.success(allDataBaseList);
+    }
+
 }
