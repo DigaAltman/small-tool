@@ -81,6 +81,7 @@ public class TableIndex implements Serializable {
      */
     private String indexComment;
 
+
     @ResultBean(id = "com.diga.orm.pojo.mysql.table.TableIndex")
     public ResultMap tableIndex() {
         ResultMap resultMap = new ResultMap("", TableIndex.class);

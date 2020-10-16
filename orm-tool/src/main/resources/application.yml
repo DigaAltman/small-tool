@@ -10,5 +10,14 @@ spring:
     password: db1_1234
     driver-class-name: com.mysql.jdbc.Driver
 
+  jackson:
+    serialization:
+      # 日期类型转换成时间戳返回
+      write-dates-as-timestamps: true
+
 server:
   port: 80
+
+
+
+
