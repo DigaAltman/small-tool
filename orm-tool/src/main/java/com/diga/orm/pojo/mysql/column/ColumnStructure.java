@@ -3,6 +3,7 @@ package com.diga.orm.pojo.mysql.column;
 import com.diga.db.annotation.ResultBean;
 import com.diga.db.core.Result;
 import com.diga.db.core.ResultMap;
+import com.diga.orm.common.SqlType;
 import com.diga.orm.vo.ColumnDetail;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
@@ -69,9 +70,19 @@ public class ColumnStructure implements Serializable {
      */
     public ColumnDetail ToVO(List<ColumnIndex> columnIndexList, List<ColumnComment> columnCommentList) {
         ColumnDetail detailVo = new ColumnDetail();
+        Class javaType = null;
+
+        for (SqlType.mysqlEnum value : SqlType.mysqlEnum.values()) {
+            if (StringUtils.upperCase(type).startsWith(value.name())) {
+                javaType = value.getJavaType();
+                break;
+            }
+        }
 
         detailVo.setColumn(field);
         detailVo.setSqlType(type);
+        detailVo.setJavaType(javaType);
+        detailVo.setProperty(com.diga.generic.utils.StringUtils.hump(field));
         detailVo.setAllowNull(isNull.equals("YES"));
         detailVo.setKey(key);
         detailVo.setExtra(extra);
@@ -96,7 +107,6 @@ public class ColumnStructure implements Serializable {
         }
 
         detailVo.setProperty(com.diga.generic.utils.StringUtils.hump(field));
-        // TODO detailVo.setJavaType();
         return detailVo;
     }
 }

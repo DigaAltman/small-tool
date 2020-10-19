@@ -39,4 +39,5 @@ public class MySQLDataBaseRepository implements DataBaseRepository {
         return dataBaseDetailList;
     }
 
+
 }

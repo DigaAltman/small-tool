@@ -1,8 +1,10 @@
 package com.diga.orm.pojo.mysql.table;
 
 import com.diga.db.annotation.ResultBean;
+import com.diga.db.annotation.Transient;
 import com.diga.db.core.Result;
 import com.diga.db.core.ResultMap;
+import com.diga.orm.vo.ColumnDetail;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
@@ -108,6 +110,8 @@ public class TableDetail implements Serializable {
      */
     private String options;
 
+    @Transient
+    private List<ColumnDetail> columnDetailList;
 
     @ResultBean(id = "com.diga.orm.pojo.mysql.table.TableDetail")
     public ResultMap tableDetail() {

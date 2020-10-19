@@ -1,27 +1,25 @@
 package com.diga.orm.controller;
 
 import com.diga.orm.common.ApiResponse;
-import com.diga.orm.service.TableService;
-import com.diga.orm.vo.ColumnDetail;
+import com.diga.orm.pojo.mysql.table.TableDetail;
+import com.diga.orm.service.ITableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/tab")
 public class TableController {
 
     @Autowired
-    private TableService tableService;
+    private ITableService tableService;
 
     @GetMapping("/structure/{tableName}")
     public ApiResponse getTableStructure(@PathVariable("tableName") String tableName) {
-        List<ColumnDetail> columnDetailList = tableService.getTableColumnList(tableName);
-        return ApiResponse.success(columnDetailList);
+        TableDetail tableDetail = tableService.getTableDetail(tableName);
+        return ApiResponse.success(tableDetail);
     }
 
     @GetMapping("/entity/{tableName}")

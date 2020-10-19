@@ -4,7 +4,10 @@ import com.diga.db.core.DB;
 import com.diga.orm.pojo.mysql.column.ColumnComment;
 import com.diga.orm.pojo.mysql.column.ColumnIndex;
 import com.diga.orm.pojo.mysql.column.ColumnStructure;
+import com.diga.orm.pojo.mysql.table.TableDetail;
 import com.diga.orm.repository.TableRepository;
+import com.diga.orm.vo.CodeNode;
+import com.diga.orm.vo.ColumnDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -88,5 +91,11 @@ public class MySQLTableRepository implements TableRepository {
     public List<ColumnComment> getTableFieldComment(String tableName) {
         List<ColumnComment> columnCommentList = db.selectList(String.format("SELECT COLUMN_NAME AS column_name, column_comment, column_type, column_key FROM information_schema.COLUMNS WHERE table_name = '%s'", tableName), ColumnComment.class);
         return columnCommentList;
+    }
+
+    @Override
+    public TableDetail getTableDetail(String tableName) {
+        TableDetail tableDetail = db.selectOne("SELECT TABLE_SCHEMA, TABLE_NAME, ENGINE, VERSION, ROW_FORMAT, TABLE_ROWS, AVG_ROW_LENGTH, DATA_LENGTH, MAX_DATA_LENGTH, INDEX_LENGTH, DATA_FREE, AUTO_INCREMENT, CREATE_TIME, UPDATE_TIME, CHECK_TIME, TABLE_COLLATION, TABLE_COMMENT, CREATE_OPTIONS  FROM information_schema.tables WHERE TABLE_SCHEMA != 'information_schema' AND TABLE_NAME=?", TableDetail.class, tableName);
+        return tableDetail;
     }
 }

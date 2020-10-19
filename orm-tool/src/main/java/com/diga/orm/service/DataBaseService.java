@@ -12,4 +12,5 @@ public interface DataBaseService {
     List<DataBaseDetail> getAllDataBase();
 
     DataBaseDetail databaseSimpleDetail();
+
 }

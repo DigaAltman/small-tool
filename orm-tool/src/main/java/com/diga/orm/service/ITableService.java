@@ -1,19 +1,14 @@
 package com.diga.orm.service;
 
-import com.diga.orm.pojo.mysql.column.ColumnComment;
-import com.diga.orm.pojo.mysql.column.ColumnIndex;
-import com.diga.orm.pojo.mysql.column.ColumnStructure;
-import com.diga.orm.vo.ColumnDetail;
-import com.google.common.collect.Lists;
+import com.diga.orm.pojo.mysql.table.TableDetail;
+import com.diga.orm.vo.CodeNode;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public interface ITableService {
-    List<ColumnDetail> getTableColumnList(String tableName);
+    CodeNode generateEntity(String tableName);
 
-    void generateEntity(String tableName);
+    CodeNode generateRepository(String tableName);
 
-    void generateRepository(String tableName);
+    TableDetail getTableDetail(String tableName);
 }
