@@ -1,8 +1,9 @@
-package com.diga.orm.repository.mysql;
+package com.diga.orm.repository.impl;
 
 import com.diga.db.core.DB;
 import com.diga.orm.configuration.ResultMapFactoryBean;
 import com.diga.orm.pojo.mysql.database.DataBaseParamValue;
+import com.diga.orm.repository.DataBaseRepository;
 import com.diga.orm.vo.DataBaseDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -11,8 +12,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-@Repository
-public class DataBaseRepository {
+@Repository("mySQLDataBaseRepository")
+public class MySQLDataBaseRepository implements DataBaseRepository {
 
     @Autowired
     private DB db;

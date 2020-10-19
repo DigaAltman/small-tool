@@ -1,16 +1,17 @@
-package com.diga.orm.repository.mysql;
+package com.diga.orm.repository.impl;
 
 import com.diga.db.core.DB;
 import com.diga.orm.pojo.mysql.column.ColumnComment;
 import com.diga.orm.pojo.mysql.column.ColumnIndex;
 import com.diga.orm.pojo.mysql.column.ColumnStructure;
+import com.diga.orm.repository.TableRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
-public class TableRepository {
+@Repository("mySQLTableRepository")
+public class MySQLTableRepository implements TableRepository {
 
     @Autowired
     private DB db;
@@ -37,6 +38,7 @@ public class TableRepository {
      * +-------------+---------------+------+-----+-------------------+-------+
      * 12 rows in set (0.00 sec)
      */
+    @Override
     public List<ColumnStructure> getTableStructure(String tableName) {
         List<ColumnStructure> columnStructureList = db.selectList(String.format("SHOW COLUMNS FROM %s", tableName), ColumnStructure.class);
         return columnStructureList;
@@ -54,6 +56,7 @@ public class TableRepository {
      * +-----------+------------+--------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
      * 2 rows in set (0.01 sec)
      */
+    @Override
     public List<ColumnIndex> getTableIndex(String tableName) {
         List<ColumnIndex> tableIndexList = db.selectList(String.format("SHOW INDEX FROM %s", tableName), ColumnIndex.class);
         return tableIndexList;
@@ -81,6 +84,7 @@ public class TableRepository {
      * +-------------+---------------------------+---------------+------------+
      * 12 rows in set (0.00 sec)
      */
+    @Override
     public List<ColumnComment> getTableFieldComment(String tableName) {
         List<ColumnComment> columnCommentList = db.selectList(String.format("SELECT COLUMN_NAME AS column_name, column_comment, column_type, column_key FROM information_schema.COLUMNS WHERE table_name = '%s'", tableName), ColumnComment.class);
         return columnCommentList;

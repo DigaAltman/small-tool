@@ -2,7 +2,7 @@ package com.diga.orm.controller;
 
 import com.diga.orm.common.ApiResponse;
 import com.diga.orm.pojo.mysql.database.DataBaseParamValue;
-import com.diga.orm.service.DataBaseService;
+import com.diga.orm.service.impl.MySQLDataBaseService;
 import com.diga.orm.vo.DataBaseDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +16,7 @@ import java.util.List;
 public class DataBaseController {
 
     @Autowired
-    private DataBaseService dataBaseService;
+    private MySQLDataBaseService dataBaseService;
 
     @GetMapping("/detail")
     public ApiResponse detail() {

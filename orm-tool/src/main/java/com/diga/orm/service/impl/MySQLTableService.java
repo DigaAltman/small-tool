@@ -1,20 +1,23 @@
-package com.diga.orm.service;
+package com.diga.orm.service.impl;
 
 import com.diga.orm.pojo.mysql.column.ColumnComment;
 import com.diga.orm.pojo.mysql.column.ColumnIndex;
 import com.diga.orm.pojo.mysql.column.ColumnStructure;
-import com.diga.orm.repository.mysql.TableRepository;
+import com.diga.orm.repository.TableRepository;
+import com.diga.orm.service.ITableService;
 import com.diga.orm.vo.ColumnDetail;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class TableService {
+public class MySQLTableService implements ITableService {
 
     @Autowired
+    @Qualifier("mySQLTableRepository")
     private TableRepository tableRepository;
 
     // 基于表名称获取数据表的字段和索引结构
@@ -37,9 +40,13 @@ public class TableService {
         return columnDetailList;
     }
 
+    // 生成实体类
     public void generateEntity(String tableName) {
+
     }
 
+    // 生成持久层
     public void generateRepository(String tableName) {
+
     }
 }
