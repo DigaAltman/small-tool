@@ -52,9 +52,23 @@ public class MySQLEntityHandler implements GenerateHandler {
         Set<Class> IMPORT_CLASS_SET = new HashSet();
         StringUtils.SBuilder IMPORT = StringUtils.to("import lombok.Data;\n\nimport java.io.Serializable;\n");
 
+        switch (repositoryType) {
+            case MYBATIS_MAPPER:
+            case SPRING_DATA_JPA:
+                IMPORT.to("import javax.persistence.Column;\nimport javax.persistence.Entity;\nimport javax.persistence.Id;\nimport javax.persistence.Table;\n");
+                break;
+            case MYBATIS_PLUS:
+                IMPORT.to("import com.baomidou.mybatisplus.annotation.IdType;\nimport com.baomidou.mybatisplus.annotation.TableField;\nimport com.baomidou.mybatisplus.annotation.TableId;\nimport com.baomidou.mybatisplus.annotation.TableName;\n");
+                break;
+            case MYBATIS:
+            case JDBC:
+                break;
+            case DB:
+                IMPORT.to("import com.diga.db.annotation.Column;\nimport com.diga.db.annotation.Id;\n");
+                break;
+        }
 
-        String TITLE =
-                "/**\n" +
+        String TITLE = "/**\n" +
                 " * @date        {date}\n" +
                 " * @description {description}\n" +
                 " */\n";
@@ -66,10 +80,23 @@ public class MySQLEntityHandler implements GenerateHandler {
 
         StringUtils.SBuilder body = StringUtils.to(TITLE);
 
+        switch (repositoryType) {
+            case MYBATIS_MAPPER:
+            case SPRING_DATA_JPA:
+                body.to("@Entity\n@Table(name = \"", tableDetail.getTableName(), "\")");
+                break;
+            case MYBATIS_PLUS:
+                body.to("@TableName(\"", tableDetail.getTableName(), "\")");
+                break;
+            case MYBATIS:
+            case JDBC:
+            case DB:
+                break;
+        }
+
         body.to("public class ", StringUtils.firstUpper(tableDetail.getEntityName()), " implements Serializable {\n");
 
-        String FIELD =
-                "\t/**{comment}\n" +
+        String FIELD = "\t/**{comment}\n" +
                 "\t */";
 
         // 循环遍历字段
@@ -77,7 +104,7 @@ public class MySQLEntityHandler implements GenerateHandler {
             StringUtils.SBuilder sb = StringUtils.to();
 
             if (!org.apache.commons.lang3.StringUtils.isEmpty(columnDetail.getKey())) {
-                sb.to("\n\t * 所属索引[", columnDetail.getKeyName(),"] {'类型': ", columnDetail.getKey(), ",");
+                sb.to("\n\t * 所属索引[", columnDetail.getKeyName(), "] {'类型': ", columnDetail.getKey(), ",");
                 sb.to("'结构':", columnDetail.getIndexType(), ",");
                 sb.to("'顺序':", columnDetail.getSeqInIndex().toString(), ",");
                 sb.to("'备注':", columnDetail.getIndexComment(), "}\n");
@@ -94,6 +121,17 @@ public class MySQLEntityHandler implements GenerateHandler {
 
             Class fieldType = columnDetail.getJavaType();
             IMPORT_CLASS_SET.add(fieldType);
+
+            switch (repositoryType) {
+                case SPRING_DATA_JPA:
+                    if (org.apache.commons.lang3.StringUtils.equals(columnDetail.getKey(), "PRI")) {
+                        body.to("@Id\n");
+                    }
+                    body.to("@Column(name = \"", columnDetail.getColumn(), "\")");
+
+                case MYBATIS_MAPPER:
+                    break;
+            }
 
             body.to("\tprivate\t", fieldType.getSimpleName(), "\t", columnDetail.getProperty());
             if (org.apache.commons.lang3.StringUtils.isBlank(columnDetail.getDefaultValue()) && !Date.class.isAssignableFrom(fieldType)) {
