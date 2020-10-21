@@ -1,29 +1,47 @@
 package com.diga.orm.handler.pom;
 
-import com.diga.orm.common.DataBaseEnum;
+import com.diga.generic.utils.FileUtils;
+import com.diga.generic.utils.ModelUtils;
+import com.diga.generic.utils.StringUtils;
+import com.diga.generic.utils.URLUtils;
+import com.diga.orm.common.CodeEnum;
 import com.diga.orm.handler.GenerateHandler;
 import com.diga.orm.pojo.mysql.table.TableDetail;
-import com.diga.orm.vo.CodeNode;
+import com.diga.orm.vo.Code;
+import org.apache.commons.io.FilenameUtils;
+import org.springframework.core.io.UrlResource;
 
-public class AbstractPomHandler implements GenerateHandler {
-    /**
-     * 能处理的数据库类型
-     *
-     * @return
-     */
-    @Override
-    public DataBaseEnum handleDataBaseEnum() {
-        return null;
+import javax.sql.DataSource;
+import java.net.MalformedURLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public abstract class AbstractPomHandler implements GenerateHandler {
+    private GenerateHandler generateHandler;
+    private TableDetail tableDetail;
+
+    public AbstractPomHandler(TableDetail tableDetail) {
+        this.tableDetail = tableDetail;
     }
 
-    /**
-     * 处理器核心方法
-     *
-     * @param codeNode    具体代码
-     * @param tableDetail 表详情信息
-     */
     @Override
-    public void handle(CodeNode codeNode, TableDetail tableDetail) {
+    public void handle(List<Code> codeList) {
+        String model = FileUtils.readFile(URLUtils.filepath("./model/pom.model"));
+        Map<String, Object> vm = new HashMap();
+        vm.put("groupId", "org.example");
+        vm.put("artifactId", "wdnmd");
+        vm.put("version", "0.0.1.RELEASE");
+        vm.put("packaging", "jar");
 
+
+
+        String app = ModelUtils.render(model, vm);
+        codeList.add(new Code(CodeEnum.XML,"pom.xml", app));
+        
+        generateHandler.handle(codeList);
     }
+
+
+    protected abstract void mapperDependencies(Map<String, Object> vm);
 }

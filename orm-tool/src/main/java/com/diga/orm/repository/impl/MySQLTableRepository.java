@@ -6,8 +6,6 @@ import com.diga.orm.pojo.mysql.column.ColumnIndex;
 import com.diga.orm.pojo.mysql.column.ColumnStructure;
 import com.diga.orm.pojo.mysql.table.TableDetail;
 import com.diga.orm.repository.TableRepository;
-import com.diga.orm.vo.CodeNode;
-import com.diga.orm.vo.ColumnDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

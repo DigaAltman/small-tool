@@ -1,7 +1,7 @@
 package com.diga.orm.common;
 
-public enum CodeTypeEnum {
+public enum CodeEnum {
     JAVA,
     XML,
-    PROP
+    YAML
 }

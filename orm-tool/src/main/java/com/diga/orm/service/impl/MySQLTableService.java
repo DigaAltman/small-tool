@@ -1,17 +1,14 @@
 package com.diga.orm.service.impl;
 
-import com.diga.orm.common.CodeTypeEnum;
 import com.diga.orm.common.DataBaseEnum;
-import com.diga.orm.handler.GenerateHandler;
 import com.diga.orm.pojo.mysql.column.ColumnComment;
 import com.diga.orm.pojo.mysql.column.ColumnIndex;
 import com.diga.orm.pojo.mysql.column.ColumnStructure;
 import com.diga.orm.pojo.mysql.table.TableDetail;
-import com.diga.orm.repository.DataBaseRepository;
 import com.diga.orm.repository.TableRepository;
 import com.diga.orm.service.GenerateDispatch;
 import com.diga.orm.service.ITableService;
-import com.diga.orm.vo.CodeNode;
+import com.diga.orm.vo.Code;
 import com.diga.orm.vo.ColumnDetail;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,9 +46,9 @@ public class MySQLTableService implements ITableService {
     }
 
     // 生成实体类
-    public CodeNode generateEntity(String tableName) {
+    public Code generateEntity(String tableName) {
         TableDetail tableDetail = getTableDetail(tableName);
-        CodeNode codeNode = new CodeNode();
+        Code codeNode = new Code();
 
         GenerateDispatch generateDispatch = new GenerateDispatch(DataBaseEnum.MYSQL, null);
         generateDispatch.dispatch(codeNode, tableDetail);
@@ -59,8 +56,8 @@ public class MySQLTableService implements ITableService {
     }
 
     // 生成持久层
-    public CodeNode generateRepository(String tableName) {
-        CodeNode codeNode = new CodeNode();
+    public Code generateRepository(String tableName) {
+        Code codeNode = new Code();
         return codeNode;
     }
 

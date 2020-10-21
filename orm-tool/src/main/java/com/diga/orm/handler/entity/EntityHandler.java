@@ -2,12 +2,12 @@ package com.diga.orm.handler.entity;
 
 import com.diga.generic.utils.DateTimeUtils;
 import com.diga.generic.utils.StringUtils;
-import com.diga.orm.common.CodeTypeEnum;
+import com.diga.orm.common.CodeEnum;
 import com.diga.orm.common.DataBaseEnum;
 import com.diga.orm.common.RepositoryEnum;
 import com.diga.orm.handler.GenerateHandler;
 import com.diga.orm.pojo.mysql.table.TableDetail;
-import com.diga.orm.vo.CodeNode;
+import com.diga.orm.vo.Code;
 import com.diga.orm.vo.ColumnDetail;
 
 import java.util.Date;
@@ -16,53 +16,37 @@ import java.util.List;
 import java.util.Set;
 
 public class EntityHandler implements GenerateHandler {
-    private GenerateHandler nextHandler;
+    private TableDetail tableDetail;
+    private GenerateHandler generateHandler;
     private RepositoryEnum repositoryType;
 
-    public EntityHandler(GenerateHandler nextHandler, RepositoryEnum repositoryEnum) {
-        this.nextHandler = nextHandler;
+    public EntityHandler(GenerateHandler generateHandler, RepositoryEnum repositoryEnum, TableDetail tableDetail) {
+        this.generateHandler = generateHandler;
         this.repositoryType = repositoryEnum;
+        this.tableDetail = tableDetail;
     }
 
-    /**
-     * 能处理的数据库类型
-     *
-     * @return
-     */
     @Override
-    public DataBaseEnum handleDataBaseEnum() {
-        return DataBaseEnum.MYSQL;
-    }
-
-    /**
-     * 处理器核心方法
-     *
-     * @param codeNode    具体代码
-     * @param tableDetail 表详情信息
-     */
-    @Override
-    public void handle(CodeNode codeNode, TableDetail tableDetail) {
-        codeNode.setCodeTypeEnum(CodeTypeEnum.JAVA);
-        List<CodeNode.Code> codeList = codeNode.getCodeList();
-        CodeNode.Code code = new CodeNode.Code(tableDetail.getEntityName(), null);
-        codeList.add(code);
-
+    public void handle(List<Code> codeList) {
+        Code code = new Code(CodeEnum.JAVA, tableDetail.getEntityName(), null);
         // TODO package xxx.xxx.entity;
         StringUtils.SBuilder PACK = StringUtils.to("package xxx.xxx.entity;\n\n");
         Set<Class> IMPORT_CLASS_SET = new HashSet();
         StringUtils.SBuilder IMPORT = StringUtils.to("import lombok.Data;\n\nimport java.io.Serializable;\n");
 
         switch (repositoryType) {
-            case MYBATIS_MAPPER:
             case SPRING_DATA_JPA:
                 IMPORT.to("import javax.persistence.Column;\nimport javax.persistence.Entity;\nimport javax.persistence.Id;\nimport javax.persistence.Table;\n");
                 break;
+
             case MYBATIS_PLUS:
                 IMPORT.to("import com.baomidou.mybatisplus.annotation.IdType;\nimport com.baomidou.mybatisplus.annotation.TableField;\nimport com.baomidou.mybatisplus.annotation.TableId;\nimport com.baomidou.mybatisplus.annotation.TableName;\n");
                 break;
+
             case MYBATIS:
             case JDBC:
                 break;
+
             case DB:
                 IMPORT.to("import com.diga.db.annotation.Column;\nimport com.diga.db.annotation.Id;\n");
                 break;
@@ -81,13 +65,14 @@ public class EntityHandler implements GenerateHandler {
         StringUtils.SBuilder body = StringUtils.to(TITLE);
 
         switch (repositoryType) {
-            case MYBATIS_MAPPER:
             case SPRING_DATA_JPA:
                 body.to("@Entity\n@Table(name = \"", tableDetail.getTableName(), "\")");
                 break;
+
             case MYBATIS_PLUS:
                 body.to("@TableName(\"", tableDetail.getTableName(), "\")");
                 break;
+
         }
 
         body.to("public class ", StringUtils.firstUpper(tableDetail.getEntityName()), " implements Serializable {\n");
@@ -127,7 +112,6 @@ public class EntityHandler implements GenerateHandler {
                     break;
 
                 case DB:
-                case MYBATIS_MAPPER:
                 case SPRING_DATA_JPA:
                     if (org.apache.commons.lang3.StringUtils.equals(columnDetail.getKey(), "PRI")) {
                         body.to("@Id\n");
@@ -160,9 +144,7 @@ public class EntityHandler implements GenerateHandler {
         String codeValue = StringUtils.to(PACK.toString(), IMPORT.toString(), "\n", body.toString(), "\n").toString();
         code.setBody(codeValue);
 
-        CodeNode nextCode = new CodeNode();
-        codeNode.setNext(nextCode);
-        nextHandler.handle(nextCode, tableDetail);
+        codeList.add(code);
     }
 
 }

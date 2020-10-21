@@ -1,14 +1,14 @@
 package com.diga.orm.service;
 
 import com.diga.orm.pojo.mysql.table.TableDetail;
-import com.diga.orm.vo.CodeNode;
+import com.diga.orm.vo.Code;
 import org.springframework.stereotype.Service;
 
 @Service
 public interface ITableService {
-    CodeNode generateEntity(String tableName);
+    Code generateEntity(String tableName);
 
-    CodeNode generateRepository(String tableName);
+    Code generateRepository(String tableName);
 
     TableDetail getTableDetail(String tableName);
 }

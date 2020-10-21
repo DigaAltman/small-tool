@@ -4,7 +4,7 @@ import com.diga.orm.common.DataBaseEnum;
 import com.diga.orm.common.RepositoryEnum;
 import com.diga.orm.handler.GenerateHandler;
 import com.diga.orm.pojo.mysql.table.TableDetail;
-import com.diga.orm.vo.CodeNode;
+import com.diga.orm.vo.Code;
 import lombok.Data;
 
 @Data
@@ -18,7 +18,7 @@ public class GenerateDispatch {
         this.repositoryEnum = repositoryEnum;
     }
 
-    public void dispatch(CodeNode codeNode, TableDetail tableDetail) {
+    public void dispatch(Code codeNode, TableDetail tableDetail) {
 
     }
 }
