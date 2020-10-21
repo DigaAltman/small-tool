@@ -1,0 +1,11 @@
+server:
+  port: {{port}}
+
+spring:
+  datasource:
+    url: {{url}}
+    username: {{username}}
+    password: {{password}}
+    driver-class-name: {{driverClassName}}
+
+{{applicationExtend}}    

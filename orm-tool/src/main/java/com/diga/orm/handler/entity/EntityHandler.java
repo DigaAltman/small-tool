@@ -15,11 +15,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class MySQLEntityHandler implements GenerateHandler {
+public class EntityHandler implements GenerateHandler {
     private GenerateHandler nextHandler;
     private RepositoryEnum repositoryType;
 
-    public MySQLEntityHandler(GenerateHandler nextHandler, RepositoryEnum repositoryEnum) {
+    public EntityHandler(GenerateHandler nextHandler, RepositoryEnum repositoryEnum) {
         this.nextHandler = nextHandler;
         this.repositoryType = repositoryEnum;
     }
@@ -88,10 +88,6 @@ public class MySQLEntityHandler implements GenerateHandler {
             case MYBATIS_PLUS:
                 body.to("@TableName(\"", tableDetail.getTableName(), "\")");
                 break;
-            case MYBATIS:
-            case JDBC:
-            case DB:
-                break;
         }
 
         body.to("public class ", StringUtils.firstUpper(tableDetail.getEntityName()), " implements Serializable {\n");
@@ -123,13 +119,20 @@ public class MySQLEntityHandler implements GenerateHandler {
             IMPORT_CLASS_SET.add(fieldType);
 
             switch (repositoryType) {
+                case MYBATIS_PLUS:
+                    if (org.apache.commons.lang3.StringUtils.equals(columnDetail.getKey(), "PRI")) {
+                        body.to("@TableId\n");
+                    }
+                    body.to("@TableField(name = \"", columnDetail.getColumn(), "\")");
+                    break;
+
+                case DB:
+                case MYBATIS_MAPPER:
                 case SPRING_DATA_JPA:
                     if (org.apache.commons.lang3.StringUtils.equals(columnDetail.getKey(), "PRI")) {
                         body.to("@Id\n");
                     }
                     body.to("@Column(name = \"", columnDetail.getColumn(), "\")");
-
-                case MYBATIS_MAPPER:
                     break;
             }
 
