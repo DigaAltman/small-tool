@@ -3,7 +3,7 @@ package com.diga.orm.pojo.mysql.column;
 import com.diga.db.annotation.ResultBean;
 import com.diga.db.core.Result;
 import com.diga.db.core.ResultMap;
-import com.diga.orm.common.SqlType;
+import com.diga.orm.common.SqlTypeCommon;
 import com.diga.orm.vo.ColumnDetail;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
@@ -72,7 +72,7 @@ public class ColumnStructure implements Serializable {
         ColumnDetail detailVo = new ColumnDetail();
         Class javaType = null;
 
-        for (SqlType.mysqlEnum value : SqlType.mysqlEnum.values()) {
+        for (SqlTypeCommon.mysqlEnum value : SqlTypeCommon.mysqlEnum.values()) {
             if (StringUtils.upperCase(type).startsWith(value.name())) {
                 javaType = value.getJavaType();
                 break;

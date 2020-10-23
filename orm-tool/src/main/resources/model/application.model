@@ -8,4 +8,4 @@ spring:
     password: {{password}}
     driver-class-name: {{driverClassName}}
 
-{{applicationExtend}}    
+{{applicationExtend}}

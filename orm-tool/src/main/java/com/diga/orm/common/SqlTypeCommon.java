@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.math.BigDecimal;
 import java.sql.*;
 
-public interface SqlType {
+public interface SqlTypeCommon {
 
     enum mysqlEnum {
         VARCHAR(String.class),
@@ -56,5 +56,12 @@ public interface SqlType {
             this.javaType = javaType;
         }
 
+    }
+
+
+    enum IndexType {
+        MUL,
+        PRI,
+        UNI
     }
 }

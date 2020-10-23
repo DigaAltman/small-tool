@@ -28,6 +28,7 @@ public class CollectionUtils {
     }
 
 
+
     /**
      * 按照 NodeJs 的 map 进行制作
      *
@@ -125,4 +126,6 @@ public class CollectionUtils {
         // 以后不够自己补充
         return value;
     }
+
+
 }
