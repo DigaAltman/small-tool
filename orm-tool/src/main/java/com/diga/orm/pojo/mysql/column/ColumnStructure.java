@@ -72,6 +72,7 @@ public class ColumnStructure implements Serializable {
         ColumnDetail detailVo = new ColumnDetail();
         Class javaType = null;
 
+
         for (SqlTypeCommon.mysqlEnum value : SqlTypeCommon.mysqlEnum.values()) {
             if (StringUtils.upperCase(type).startsWith(value.name())) {
                 javaType = value.getJavaType();

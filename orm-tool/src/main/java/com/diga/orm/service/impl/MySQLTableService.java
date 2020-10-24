@@ -1,6 +1,8 @@
 package com.diga.orm.service.impl;
 
+import com.diga.orm.common.CodeEnum;
 import com.diga.orm.common.DataBaseEnum;
+import com.diga.orm.common.RepositoryEnum;
 import com.diga.orm.pojo.mysql.column.ColumnComment;
 import com.diga.orm.pojo.mysql.column.ColumnIndex;
 import com.diga.orm.pojo.mysql.column.ColumnStructure;
@@ -46,19 +48,21 @@ public class MySQLTableService implements ITableService {
     }
 
     // 生成实体类
-    public Code generateEntity(String tableName) {
+    public List<Code> generateEntity(String tableName) {
         TableDetail tableDetail = getTableDetail(tableName);
-        Code codeNode = new Code();
 
         GenerateDispatch generateDispatch = new GenerateDispatch(DataBaseEnum.MYSQL, null);
-        generateDispatch.dispatch(codeNode, tableDetail);
-        return codeNode;
+        generateDispatch.dispatchEntity(tableDetail);
+        return generateDispatch.getCodeList();
     }
 
     // 生成持久层
-    public Code generateRepository(String tableName) {
-        Code codeNode = new Code();
-        return codeNode;
+    public List<Code> generateRepository(String tableName) {
+        TableDetail tableDetail = getTableDetail(tableName);
+
+        GenerateDispatch generateDispatch = new GenerateDispatch(DataBaseEnum.MYSQL, RepositoryEnum.MYBATIS);
+        generateDispatch.dispatch(tableDetail);
+        return generateDispatch.getCodeList();
     }
 
     // 获取数据表的详细信息

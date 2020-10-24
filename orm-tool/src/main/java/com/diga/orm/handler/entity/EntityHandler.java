@@ -17,11 +17,9 @@ import java.util.Set;
 
 public class EntityHandler implements GenerateHandler {
     private TableDetail tableDetail;
-    private GenerateHandler generateHandler;
     private RepositoryEnum repositoryType;
 
-    public EntityHandler(GenerateHandler generateHandler, RepositoryEnum repositoryEnum, TableDetail tableDetail) {
-        this.generateHandler = generateHandler;
+    public EntityHandler(RepositoryEnum repositoryEnum, TableDetail tableDetail) {
         this.repositoryType = repositoryEnum;
         this.tableDetail = tableDetail;
     }
@@ -34,22 +32,24 @@ public class EntityHandler implements GenerateHandler {
         Set<Class> IMPORT_CLASS_SET = new HashSet();
         StringUtils.SBuilder IMPORT = StringUtils.to("import lombok.Data;\n\nimport java.io.Serializable;\n");
 
-        switch (repositoryType) {
-            case SPRING_DATA_JPA:
-                IMPORT.to("import javax.persistence.Column;\nimport javax.persistence.Entity;\nimport javax.persistence.Id;\nimport javax.persistence.Table;\n");
-                break;
+        if (repositoryType != null) {
+            switch (repositoryType) {
+                case SPRING_DATA_JPA:
+                    IMPORT.to("import javax.persistence.Column;\nimport javax.persistence.Entity;\nimport javax.persistence.Id;\nimport javax.persistence.Table;\n");
+                    break;
 
-            case MYBATIS_PLUS:
-                IMPORT.to("import com.baomidou.mybatisplus.annotation.IdType;\nimport com.baomidou.mybatisplus.annotation.TableField;\nimport com.baomidou.mybatisplus.annotation.TableId;\nimport com.baomidou.mybatisplus.annotation.TableName;\n");
-                break;
+                case MYBATIS_PLUS:
+                    IMPORT.to("import com.baomidou.mybatisplus.annotation.IdType;\nimport com.baomidou.mybatisplus.annotation.TableField;\nimport com.baomidou.mybatisplus.annotation.TableId;\nimport com.baomidou.mybatisplus.annotation.TableName;\n");
+                    break;
 
-            case MYBATIS:
-            case JDBC:
-                break;
+                case MYBATIS:
+                case JDBC:
+                    break;
 
-            case DB:
-                IMPORT.to("import com.diga.db.annotation.Column;\nimport com.diga.db.annotation.Id;\n");
-                break;
+                case DB:
+                    IMPORT.to("import com.diga.db.annotation.Column;\nimport com.diga.db.annotation.Id;\n");
+                    break;
+            }
         }
 
         String TITLE = "/**\n" +

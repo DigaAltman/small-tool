@@ -16,7 +16,6 @@
         <dependency>
             <groupId>com.diga</groupId>
             <artifactId>db-tool</artifactId>
-            <version>${version}</version>
         </dependency>
 
         <dependency>

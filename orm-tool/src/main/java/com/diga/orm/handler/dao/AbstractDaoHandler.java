@@ -111,13 +111,17 @@ public abstract class AbstractDaoHandler implements GenerateHandler {
         // 参数名称
         private String paramName;
 
+        // 注解文本
+        private String annotationText;
+
         // 参数类型
         private String paramType;
 
         // 泛型类型
         private String[] genericTypes;
 
-        public StringParam(String paramName, String paramType, String[] genericTypes) {
+        public StringParam(String annotationText, String paramName, String paramType, String[] genericTypes) {
+            this.annotationText = annotationText;
             this.paramName = paramName;
             this.paramType = paramType;
             this.genericTypes = genericTypes;
@@ -125,6 +129,11 @@ public abstract class AbstractDaoHandler implements GenerateHandler {
 
         private String build() {
             com.diga.generic.utils.StringUtils.SBuilder sb = new com.diga.generic.utils.StringUtils.SBuilder();
+
+            if (!StringUtils.isBlank(annotationText)) {
+                sb.to("@" + annotationText);
+            }
+
             sb.to(paramType);
             if (genericTypes != null && genericTypes.length > 0) {
                 sb.to("<");

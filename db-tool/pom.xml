@@ -16,7 +16,6 @@
         <dependency>
             <groupId>com.diga</groupId>
             <artifactId>generic-tool</artifactId>
-            <version>${version}</version>
         </dependency>
 
     </dependencies>
