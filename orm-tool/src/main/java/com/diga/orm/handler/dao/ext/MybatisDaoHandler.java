@@ -412,7 +412,7 @@ public class MybatisDaoHandler extends AbstractDaoHandler {
 
         Set<String> importBody = new HashSet<String>();
 
-        bodyBuilder.to("public class ", this.filename, "\n");
+        bodyBuilder.to("public class ", this.filename, " { \n\n");
 
         String methodDesc = "";
         List<StringParam> paramList = Lists.newLinkedList();
