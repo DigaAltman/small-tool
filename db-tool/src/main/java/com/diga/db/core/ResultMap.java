@@ -1,6 +1,5 @@
 package com.diga.db.core;
 
-import com.diga.generic.utils.ClassUtils;
 import com.diga.generic.utils.ReflexUtils;
 import com.google.common.collect.Lists;
 import lombok.Data;

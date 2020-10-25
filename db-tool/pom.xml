@@ -12,11 +12,9 @@
     <artifactId>db-tool</artifactId>
 
     <dependencies>
-
         <dependency>
             <groupId>com.diga</groupId>
             <artifactId>generic-tool</artifactId>
         </dependency>
-
     </dependencies>
 </project>

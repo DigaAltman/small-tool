@@ -90,7 +90,7 @@ public class ColumnStructure implements Serializable {
         detailVo.setDefaultValue(defaultValue);
 
         for (ColumnIndex index : columnIndexList) {
-            if (StringUtils.equalsAnyIgnoreCase(index.getColumnName(), field)) {
+            if (StringUtils.equalsIgnoreCase(index.getColumnName(), field)) {
                 detailVo.setKeyName(index.getKeyName());
                 detailVo.setSeqInIndex(index.getSeqInIndex());
                 detailVo.setCollation(index.getCollation());
@@ -101,7 +101,7 @@ public class ColumnStructure implements Serializable {
         }
 
         for (ColumnComment comment : columnCommentList) {
-            if (StringUtils.equalsAnyIgnoreCase(comment.getColumnName(), field)) {
+            if (StringUtils.equalsIgnoreCase(comment.getColumnName(), field)) {
                 detailVo.setComment(comment.getColumnComment());
                 break;
             }
