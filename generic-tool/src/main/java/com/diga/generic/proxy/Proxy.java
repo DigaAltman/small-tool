@@ -1,9 +1,7 @@
 package com.diga.generic.proxy;
 
-import com.diga.generic.utils.CollectionUtils;
 import com.diga.generic.utils.ReflexUtils;
 import com.google.common.io.Files;
-import com.sun.istack.internal.NotNull;
 import javassist.*;
 
 import java.io.File;
@@ -37,7 +35,6 @@ public abstract class Proxy implements Serializable {
     /**
      * 用户传入的具体增强的类的代码信息
      */
-    @NotNull
     protected final InvocationHandler h;
 
     /**
