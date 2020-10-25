@@ -22,7 +22,7 @@ public abstract class AbstractAppHandler implements GenerateHandler {
 
     @Override
     public void handle(List<Code> codeList) {
-        String model = FileUtils.readFile(URLUtils.filepath("model/application.model"));
+        String model = FileUtils.readFile(URLUtils.classpath("model/application.model"));
 
         Map<String, Object> vm = new HashMap();
         vm.put("port", 8080);

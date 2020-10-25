@@ -27,7 +27,7 @@ public abstract class AbstractPomHandler implements GenerateHandler {
 
     @Override
     public void handle(List<Code> codeList) {
-        String model = FileUtils.readFile(URLUtils.filepath("model/pom.model"));
+        String model = FileUtils.readFile(URLUtils.classpath("model/pom.model"));
         Map<String, Object> vm = new HashMap();
         vm.put("groupId", "org.example");
         vm.put("artifactId", "wdnmd");

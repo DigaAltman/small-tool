@@ -55,6 +55,32 @@ public class FileUtils {
         }
     }
 
+    /**
+     * 读取文件, 并处理每行的结果
+     *
+     * @param is       文件流
+     * @param consumer 处理函数
+     */
+    @Deprecated
+    public static void readLine(InputStream is, Consumer<String> consumer) {
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new InputStreamReader(is));
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                consumer.accept(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                br.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     /**
      * 推荐使用, 基于 NIO 的方式读取文件内容
@@ -330,6 +356,7 @@ public class FileUtils {
 
     /**
      * 以 UTF-8 的形式逐行读取文件
+     *
      * @param file
      * @param consumer
      * @return
@@ -347,6 +374,18 @@ public class FileUtils {
     public static String readFile(File file) {
         StringBuilder res = new StringBuilder();
         readLine(file, line -> res.append(line).append("\n"));
+        return res.toString();
+    }
+
+    /**
+     * 读取文件的所有内容
+     *
+     * @param is
+     * @return
+     */
+    public static String readFile(InputStream is) {
+        StringBuilder res = new StringBuilder();
+        readLine(is, line -> res.append(line).append("\n"));
         return res.toString();
     }
 

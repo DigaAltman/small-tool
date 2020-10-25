@@ -309,7 +309,7 @@ public class MybatisDaoHandler extends AbstractDaoHandler {
         sb.to(generateSelectStatement("基于实体对象模型进行查询", "selectByExampleEntity", entityName, "generalMap", selectByExampleEntitySql.toString(), false));
 
 
-        String mapperXml = FileUtils.readFile(URLUtils.filepath("model/mapper.model"));
+        String mapperXml = FileUtils.readFile(URLUtils.classpath("model/mapper.model"));
         Map<String, Object> vm = new HashMap();
         vm.put("statementList", sb.toString());
         vm.put("mapperClassName", mapperPackage + "." + filename);
