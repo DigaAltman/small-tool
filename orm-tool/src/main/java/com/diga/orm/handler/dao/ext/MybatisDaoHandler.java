@@ -5,8 +5,10 @@ import com.diga.generic.utils.ModelUtils;
 import com.diga.generic.utils.StringUtils;
 import com.diga.generic.utils.URLUtils;
 import com.diga.orm.common.CodeEnum;
+import com.diga.orm.common.RepositoryEnum;
 import com.diga.orm.common.SqlTypeCommon;
 import com.diga.orm.handler.dao.AbstractDaoHandler;
+import com.diga.orm.handler.entity.EntityHandler;
 import com.diga.orm.pojo.mysql.table.TableDetail;
 import com.diga.orm.vo.Code;
 import com.diga.orm.vo.ColumnDetail;
@@ -17,23 +19,32 @@ import java.util.*;
 
 @EqualsAndHashCode
 public class MybatisDaoHandler extends AbstractDaoHandler {
+    private String filename;
+    private String entityName;
 
     public MybatisDaoHandler(TableDetail tableDetail) {
         super(tableDetail);
+        super.generateHandler = new EntityHandler(RepositoryEnum.MYBATIS, tableDetail);
+        this.filename = StringUtils.firstUpper(tableDetail.getEntityName()) + "Mapper";
+        this.entityName = entityPackage + "." + StringUtils.hump(tableDetail.getEntityName());
     }
 
     @Override
     public void generateCode(List<Code> codeList) {
-        Code javaCode = new Code(CodeEnum.JAVA, tableDetail.getEntityName(), null);
-        Code xmlCode = new Code(CodeEnum.XML, tableDetail.getEntityName(), null);
+        Code javaCode = new Code(CodeEnum.JAVA, filename, null);
+        Code xmlCode = new Code(CodeEnum.XML, filename, null);
 
         javaCode.setBody(generateJavaCode());
         xmlCode.setBody(generateXmlCode());
+
+        codeList.add(javaCode);
+        codeList.add(xmlCode);
     }
 
     /**
      * 生成 <select> 标签的方法
      *
+     * @param methodDesc    查询意义
      * @param statementId   标签名称
      * @param parameterType 参数类型
      * @param resultType    返回结果
@@ -41,10 +52,10 @@ public class MybatisDaoHandler extends AbstractDaoHandler {
      * @param isType        区分返回类型是 resultMap 还是 resultType
      * @return
      */
-    private String generateSelectStatement(String statementId, String parameterType, String resultType, String sql, boolean isType) {
-        StringUtils.SBuilder sb = StringUtils.to();
+    private String generateSelectStatement(String methodDesc, String statementId, String parameterType, String resultType, String sql, boolean isType) {
+        StringUtils.SBuilder sb = StringUtils.to("  <!--", methodDesc, "-->\n");
 
-        sb.to("\t<select id=\"", statementId, "\"");
+        sb.to("  <select id=\"", statementId, "\"");
         if (isType) {
             sb.to(" resultType=\"", resultType, "\"");
         } else {
@@ -52,46 +63,50 @@ public class MybatisDaoHandler extends AbstractDaoHandler {
         }
         sb.to(" parameterType=\"", parameterType, "\" >\n");
 
-        sb.to("\t\t", sql, "\n");
+        sb.to("    ", sql, "\n");
 
-        sb.to("\t</select>\n\n");
+        sb.to("  </select>\n\n");
         return sb.toString();
     }
 
     /**
      * 生成 <update> 标签的方法
      *
+     * @param methodDesc    方法含义
      * @param statementId   标签名称
      * @param parameterType 参数类型
      * @param sql           具体查询的 sql
      * @return
      */
-    private String generateUpdateStatement(String statementId, String parameterType, String sql) {
+    private String generateUpdateStatement(String methodDesc, String statementId, String parameterType, String sql) {
         StringUtils.SBuilder sb = StringUtils.to();
 
-        sb.to("\t<update id=\"", statementId, "\" resultType=\"int\"");
+        sb.to("  <!--", methodDesc, "-->\n");
+        sb.to("  <update id=\"", statementId, "\" resultType=\"int\"");
         sb.to(" parameterType=\"", parameterType, "\" >\n");
 
-        sb.to("\t\t", sql, "\n");
+        sb.to("    ", sql, "\n");
 
-        sb.to("\t</update>\n\n");
+        sb.to("  </update>\n\n");
         return sb.toString();
     }
 
     /**
      * 生成 <insert> 标签的方法
      *
+     * @param methodDesc  方法简介
      * @param statementId 标签名称
      * @param sql         具体执行的 sql
      */
-    private String generateInsertStatement(String statementId, String sql) {
+    private String generateInsertStatement(String methodDesc, String statementId, String sql) {
         StringUtils.SBuilder sb = StringUtils.to();
-        sb.to("\t<insert id=\"", statementId, "\" resultType=\"int\"");
-        sb.to(" parameterType=\"", StringUtils.lowerFirstCase(tableDetail.getEntityName()), "\" >\n");
+        sb.to("  <!--", methodDesc, "-->\n");
+        sb.to("  <insert id=\"", statementId, "\" resultType=\"int\"");
+        sb.to(" parameterType=\"", entityName, "\" >\n");
 
-        sb.to("\t\t", sql, "\n");
+        sb.to("    ", sql, "\n");
 
-        sb.to("\t</insert>\n\n");
+        sb.to("  </insert>\n\n");
         return sb.toString();
     }
 
@@ -99,18 +114,20 @@ public class MybatisDaoHandler extends AbstractDaoHandler {
     /**
      * 生成 <delete> 标签的方法
      *
+     * @param methodDesc    方法介绍
      * @param statementId   标签名称
      * @param parameterType 参数类型
      * @param sql           具体执行的 sql
      */
-    private String generateDeleteStatement(String statementId, String parameterType, String sql) {
+    private String generateDeleteStatement(String methodDesc, String statementId, String parameterType, String sql) {
         StringUtils.SBuilder sb = StringUtils.to();
-        sb.to("\t<delete id=\"", statementId, "\" resultType=\"int\"");
+        sb.to("  <!--", methodDesc, "-->\n");
+        sb.to("  <delete id=\"", statementId, "\" resultType=\"int\"");
         sb.to(" parameterType=\"", parameterType, "\" >\n");
 
-        sb.to("\t\t", sql, "\n");
+        sb.to("    ", sql, "\n");
 
-        sb.to("\t</delete>\n\n");
+        sb.to("  </delete>\n\n");
         return sb.toString();
     }
 
@@ -171,12 +188,10 @@ public class MybatisDaoHandler extends AbstractDaoHandler {
         StringUtils.SBuilder sb = StringUtils.to();
 
         // 生成 result-map
-        sb.to(generateResultMap());
-        // 生成 sql 片段
-        sb.to(generateSqlSection());
+        sb.to(generateResultMap(), "\n");
 
-        // 实体类别名
-        String typeAliasEntity = StringUtils.lowerFirstCase(tableDetail.getEntityName());
+        // 生成 sql 片段
+        sb.to(generateSqlSection(), "\n");
 
 
         // 生成基于主键的字段查询
@@ -189,32 +204,33 @@ public class MybatisDaoHandler extends AbstractDaoHandler {
             // updateByPrimary
             StringBuilder primaryUpdate = new StringBuilder("UPDATE ");
             primaryUpdate.append(tableDetail.getTableName()).append("\n");
-            primaryUpdate.append("\t\t<set>\n");
+            primaryUpdate.append("    <set>\n");
             tableDetail.getColumnDetailList().forEach(column -> {
-                if (!org.apache.commons.lang3.StringUtils.isBlank(column.getKey()) && SqlTypeCommon.IndexType.PRI == SqlTypeCommon.IndexType.valueOf(column.getKey())) {
-                    primaryUpdate.append("\t\t\t<if test=\"").append(column.getProperty()).append(" != null\">").append(column.getColumn()).append(" = #{").append(column.getProperty()).append("},</if>\n");
+                // 如果列不是主键
+                if (column.getKey() != SqlTypeCommon.IndexType.PRI.name()) {
+                    primaryUpdate.append("      <if test=\"").append(column.getProperty()).append(" != null\">").append(column.getColumn()).append(" = #{").append(column.getProperty()).append("},</if>\n");
                 }
             });
-            primaryUpdate.append("\t\t</set>\n");
-            primaryUpdate.append("\t\tWHERE ").append(primaryExpr);
+            primaryUpdate.append("    </set>\n");
+            primaryUpdate.append("    WHERE ").append(primaryExpr);
 
             // deleteByPrimary 这里我们加一个 LIMIT 1 是为了保险
             String primaryDelete = "DELETE FROM " + tableDetail.getTableName() + " WHERE " + primaryExpr + " LIMIT 1";
 
 
             if (primaryIndex.size() > 1) {
-                sb.to(generateSelectStatement("selectByPrimary", "map", "generalMap", primarySelect, false));
-                sb.to(generateUpdateStatement("updateByPrimary", "map", primaryUpdate.toString()));
-                sb.to(generateDeleteStatement("deleteByPrimary", "map", primaryDelete));
+                sb.to(generateSelectStatement("根据主键进行查询,推荐使用. 查询结果最多只有一条数据", "selectByPrimary", "map", "generalMap", primarySelect, false));
+                sb.to(generateUpdateStatement("根据主键选择性修改数据, 推荐使用", "updateByPrimary", "map", primaryUpdate.toString()));
+                sb.to(generateDeleteStatement("根据主键删除数据","deleteByPrimary", "map", primaryDelete));
             } else {
-                sb.to(generateSelectStatement("selectByPrimary", primaryIndex.get(0).getJavaType().getName(), "generalMap", primarySelect, false));
-                sb.to(generateUpdateStatement("updateByPrimary", primaryIndex.get(0).getJavaType().getName(), primaryUpdate.toString()));
-                sb.to(generateDeleteStatement("deleteByPrimary", primaryIndex.get(0).getJavaType().getName(), primaryDelete));
+                sb.to(generateSelectStatement("根据主键进行查询,推荐使用. 查询结果最多只有一条数据", "selectByPrimary", primaryIndex.get(0).getJavaType().getName(), "generalMap", primarySelect, false));
+                sb.to(generateUpdateStatement("根据主键选择性修改数据, 推荐使用", "updateByPrimary", primaryIndex.get(0).getJavaType().getName(), primaryUpdate.toString()));
+                sb.to(generateDeleteStatement("根据主键删除数据","deleteByPrimary", primaryIndex.get(0).getJavaType().getName(), primaryDelete));
             }
         }
 
 
-        StringUtils.SBuilder insert = StringUtils.to("INSERT INTO ", tableDetail.getTableName(), "(\n");
+        StringUtils.SBuilder insert = StringUtils.to("INSERT INTO ", tableDetail.getTableName(), "(");
         StringUtils.SBuilder insertSelective = StringUtils.to("INSERT INTO ", tableDetail.getTableName(), "(\n");
 
 
@@ -228,33 +244,33 @@ public class MybatisDaoHandler extends AbstractDaoHandler {
         for (int i = 0; i < tableDetail.getColumnDetailList().size(); i++) {
             ColumnDetail column = tableDetail.getColumnDetailList().get(i);
             names.to(column.getColumn());
-            selectNames.to("\t\t\t<if test=\"", column.getProperty(), " != null\" >\n");
-            selectValues.to("\t\t\t<if test=\"", column.getProperty(), " != null\" >\n");
+            selectNames.to("      <if test=\"", column.getProperty(), " != null\" >\n");
+            selectValues.to("      <if test=\"", column.getProperty(), " != null\" >\n");
 
             values.to("#{", column.getProperty(), "}");
             if (i != tableDetail.getColumnDetailList().size() - 1) {
                 names.to(",");
-                selectNames.to("\t\t\t\t", column.getColumn(), "\n");
+                selectNames.to("        ", column.getColumn(), "\n");
 
                 values.to(",");
-                selectValues.to("\t\t\t\t#{", column.getProperty(), "},\n");
+                selectValues.to("        #{", column.getProperty(), "},\n");
             }
 
-            selectNames.to("\t\t\t</if>\n");
-            selectValues.to("\t\t\t</if>\n");
+            selectNames.to("      </if>\n");
+            selectValues.to("      </if>\n");
         }
 
         insert.to(names.toString(), ") VALUES(", values.toString(), ")");
-        insertSelective.to("\t\t<trim prefix=\"(\" suffix=\")\" suffixOverrides=\",\" >\n");
+        insertSelective.to("    <trim prefix=\"(\" suffix=\")\" suffixOverrides=\",\" >\n");
         insertSelective.to(selectNames.toString());
-        insertSelective.to("\t\t</trim>\n");
+        insertSelective.to("    </trim>\n");
 
-        insertSelective.to("\t\t<trim prefix=\"(\" suffix=\")\" suffixOverrides=\",\" >\n");
+        insertSelective.to("    <trim prefix=\"VALUES (\" suffix=\")\" suffixOverrides=\",\" >\n");
         insertSelective.to(selectValues.toString());
-        insertSelective.to("\t\t</trim>\n");
+        insertSelective.to("    </trim>\n");
 
-        sb.to(generateInsertStatement("insert", insert.toString()));
-        sb.to(generateInsertStatement("insertSelective", insertSelective.toString()));
+        sb.to(generateInsertStatement("添加所有字段对应的数据", "insert", insert.toString()));
+        sb.to(generateInsertStatement("选择性的添加字段数据", "insertSelective", insertSelective.toString()));
 
         // 基于唯一索引查询
         onlyIndex.forEach(column -> {
@@ -264,39 +280,40 @@ public class MybatisDaoHandler extends AbstractDaoHandler {
             String parameterType = column.getJavaType().getName();
             String expr = column.getColumn() + " = #{" + column.getProperty() + "}";
 
-            sb.to(generateSelectStatement(selectStatementId, parameterType, "generalMap", "SELECT <include refid=\"generalSql\"/> FROM " + tableDetail.getTableName() + " WHERE " + expr, false));
-            sb.to(generateSelectStatement(containStatementId, parameterType, "int", "SELECT COUNT(1) FROM " + tableDetail.getTableName() + " WHERE " + expr, false));
+            sb.to(generateSelectStatement("基于唯一索引查询, 查询字段对应的数据是否已存在", selectStatementId, parameterType, "generalMap", "SELECT <include refid=\"generalSql\"/> FROM " + tableDetail.getTableName() + " WHERE " + expr, false));
+            sb.to(generateSelectStatement("基于唯一索引查询, 判断数据是否已经存在数据库中", containStatementId, parameterType, "int", "SELECT COUNT(1) FROM " + tableDetail.getTableName() + " WHERE " + expr, false));
         });
 
         // 基于普通索引或组合索引查询
         mulIndex.forEach((indexName, columnList) -> {
             String expr = generateExprByParameterList(columnList);
             String statementId = "selectBy" + generateMethodNameByParameterList("SELECT", columnList);
-            String sql = "SELECT <include refid=\"generalSql\"/> FROM " + tableDetail.getTableName() + " WHERE " + expr;
+            String sql = "    SELECT <include refid=\"generalSql\"/> FROM " + tableDetail.getTableName() + " WHERE " + expr;
             if (columnList.size() > 1) {
-                sb.to(generateSelectStatement(statementId, "map", "generalMap", sql, false));
+                sb.to(generateSelectStatement("基于普通索引或组合索引查询", statementId, "map", "generalMap", sql, false));
             } else {
-                sb.to(generateSelectStatement(statementId, columnList.get(0).getJavaType().getName(), "generalMap", sql, false));
+                sb.to(generateSelectStatement("基于普通索引或组合索引查询", statementId, columnList.get(0).getJavaType().getName(), "generalMap", sql, false));
             }
         });
 
         // 基于当前实体类进行查询
-        StringUtils.SBuilder selectByExampleEntitySql = StringUtils.to("SELECT <include refid=\"generalSql\"/> FROM ", tableDetail.getTableName(), "\n");
-        selectByExampleEntitySql.to("\t\t<where>\n");
+        StringUtils.SBuilder selectByExampleEntitySql = StringUtils.to("    SELECT <include refid=\"generalSql\"/> FROM ", tableDetail.getTableName(), "\n");
+        selectByExampleEntitySql.to("    <where>\n");
 
         for (int i = 0; i < tableDetail.getColumnDetailList().size(); i++) {
             ColumnDetail column = tableDetail.getColumnDetailList().get(i);
-            selectByExampleEntitySql.to("\t\t\t<if test=\"", column.getProperty(), "!=null\">", column.getColumn(), "=#{", column.getProperty(), "}</if>\n");
+            selectByExampleEntitySql.to("      <if test=\"", column.getProperty(), " != null\">", column.getColumn(), " = #{", column.getProperty(), "}</if>\n");
         }
+        selectByExampleEntitySql.to("    </where>");
 
-        selectByExampleEntitySql.to("\t\t</where>\n");
-
-        sb.to(generateSelectStatement("selectByExampleEntity", typeAliasEntity, "generalMap", selectByExampleEntitySql.toString(), false));
+        sb.to(generateSelectStatement("基于实体对象模型进行查询", "selectByExampleEntity", entityName, "generalMap", selectByExampleEntitySql.toString(), false));
 
 
         String mapperXml = FileUtils.readFile(URLUtils.filepath("model/mapper.model"));
         Map<String, Object> vm = new HashMap();
         vm.put("statementList", sb.toString());
+        vm.put("mapperClassName", mapperPackage + "." + filename);
+
         return ModelUtils.render(mapperXml, vm);
     }
 
@@ -306,10 +323,9 @@ public class MybatisDaoHandler extends AbstractDaoHandler {
      * @return
      */
     private String generateSqlSection() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("\t<sql id=\"generalSql\">\n");
-
-        sb.append("\t\t");
+        StringBuilder sb = new StringBuilder("\n");
+        sb.append("  <sql id=\"generalSql\">\n");
+        sb.append("    ");
 
         for (int i = 0; i < tableDetail.getColumnDetailList().size(); i++) {
             ColumnDetail column = tableDetail.getColumnDetailList().get(i);
@@ -320,8 +336,8 @@ public class MybatisDaoHandler extends AbstractDaoHandler {
         }
 
         sb.append("\n");
+        sb.append("  </sql>\n");
 
-        sb.append("\t</sql>");
         return sb.toString();
     }
 
@@ -331,32 +347,31 @@ public class MybatisDaoHandler extends AbstractDaoHandler {
      * @return
      */
     private String generateResultMap() {
-        StringUtils.SBuilder sb = new StringUtils.SBuilder();
-
-        sb.to("\t<resultMap id=\"generalMap\" type=\"", StringUtils.lowerFirstCase(tableDetail.getEntityName()), "\">\n");
+        StringUtils.SBuilder sb = StringUtils.to("\n");
+        sb.to("  <resultMap id=\"generalMap\" type=\"", entityName, "\">\n");
 
         primaryIndex.forEach(column -> {
-            sb.to("\t\t<!-- 主键索引, 建议使用这个字段作为条件进行查询 -->\n");
-            sb.to("\t\t<id property=\"", column.getProperty(), "\" column=\"", column.getColumn(), "\"/>\n");
+            sb.to("    <!-- 主键索引, 建议使用这个字段作为条件进行查询 -->\n");
+            sb.to("    <id property=\"", column.getProperty(), "\" column=\"", column.getColumn(), "\"/>\n");
             sb.to("\n");
         });
 
         onlyIndex.forEach(column -> {
-            sb.to("\t\t<!-- 唯一索引, 建议使用这个字段作为条件进行查询 -->\n");
-            sb.to("\t\t<result property=\"", column.getProperty(), "\" column=\"", column.getColumn(), "\"/>\n");
+            sb.to("    <!-- 唯一索引, 建议使用这个字段作为条件进行查询 -->\n");
+            sb.to("    <result property=\"", column.getProperty(), "\" column=\"", column.getColumn(), "\"/>\n");
             sb.to("\n");
         });
 
         mulIndex.forEach((indexName, columnList) -> {
             if (columnList.size() == 1) {
-                sb.to("\t\t<!-- 普通索引, 建议使用这个字段作为条件进行查询 -->\n");
-                sb.to("\t\t<result property=\"", columnList.get(0).getProperty(), "\" column=\"", columnList.get(0).getColumn(), "\"/>\n");
+                sb.to("    <!-- 普通索引, 建议使用这个字段作为条件进行查询 -->\n");
+                sb.to("    <result property=\"", columnList.get(0).getProperty(), "\" column=\"", columnList.get(0).getColumn(), "\"/>\n");
                 sb.to("\n");
             } else {
-                sb.to("\t\t<!-- 组合索引, 建议使用组合索引的全部字段作为条件或者组合索引的第一个字段进行查询 -->\n");
+                sb.to("    <!-- 组合索引, 建议使用组合索引的全部字段作为条件或者组合索引的第一个字段进行查询 -->\n");
                 for (ColumnDetail columnDetail : columnList) {
-                    sb.to("\t\t<!-- 组合索引中的顺序[\"", columnDetail.getSeqInIndex().toString(), "\"] -->\n");
-                    sb.to("\t\t<result property=\"", columnDetail.getProperty(), "\" column=\"", columnDetail.getColumn(), "\"/>\n");
+                    sb.to("    <!-- 组合索引中的顺序[\"", columnDetail.getSeqInIndex().toString(), "\"] -->\n");
+                    sb.to("    <result property=\"", columnDetail.getProperty(), "\" column=\"", columnDetail.getColumn(), "\"/>\n");
                 }
                 sb.to("\n");
             }
@@ -365,11 +380,11 @@ public class MybatisDaoHandler extends AbstractDaoHandler {
         // 普通字段遍历
         tableDetail.getColumnDetailList().forEach(column -> {
             if (org.apache.commons.lang3.StringUtils.isBlank(column.getKey())) {
-                sb.to("\t\t<result property=\"", column.getProperty(), "\" column=\"", column.getColumn(), "\"/>\n");
+                sb.to("    <result property=\"", column.getProperty(), "\" column=\"", column.getColumn(), "\"/>\n");
             }
         });
 
-        sb.to("\t</resultMap>\n");
+        sb.to("  </resultMap>\n");
 
         return sb.toString();
     }
@@ -397,13 +412,16 @@ public class MybatisDaoHandler extends AbstractDaoHandler {
 
         Set<String> importBody = new HashSet<String>();
 
-        bodyBuilder.to("public class ", tableDetail.getEntityName(), "Mapper {\n");
+        bodyBuilder.to("public class ", this.filename, "\n");
 
         String methodDesc = "";
         List<StringParam> paramList = Lists.newLinkedList();
 
-        String returnEntity = super.entityPackage + "." + tableDetail.getEntityName();
-        importBody.add(returnEntity);
+        // mapper 对应的 实体类
+        String returnEntity = StringUtils.firstUpper(tableDetail.getEntityName());
+        // 实体类的全路径名称
+        String returnEntityPackage = super.entityPackage + "." + returnEntity;
+        importBody.add(returnEntityPackage);
 
         // 基于主键查询
         boolean primaryLengthStatus = super.primaryIndex.size() > 1;
@@ -454,6 +472,7 @@ public class MybatisDaoHandler extends AbstractDaoHandler {
 
             // 生成 containByUsername
             bodyBuilder.to(super.generateInterfaceMethod("int", "containBy" + onlyColumn, onlyParamList, "是否包含 [" + fieldDesc + "] 字段对应的结果,此方法走唯一索引", "返回结果 > 0表示数据已经存在"));
+            bodyBuilder.to("\n\n");
         }
 
         // 基于组合索引或普通索引进行查询
@@ -496,7 +515,7 @@ public class MybatisDaoHandler extends AbstractDaoHandler {
 
         importBody.forEach(e -> {
             if (!e.startsWith("java.lang")) {
-                importBuilder.to(e);
+                importBuilder.to("import ", e, "\n");
             }
         });
 

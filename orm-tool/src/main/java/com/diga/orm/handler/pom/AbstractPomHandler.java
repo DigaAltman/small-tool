@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class AbstractPomHandler implements GenerateHandler {
-    private GenerateHandler generateHandler;
-    private TableDetail tableDetail;
+    protected GenerateHandler generateHandler;
+    protected TableDetail tableDetail;
 
     public AbstractPomHandler(TableDetail tableDetail) {
         this.tableDetail = tableDetail;
@@ -32,9 +32,9 @@ public abstract class AbstractPomHandler implements GenerateHandler {
         vm.put("groupId", "org.example");
         vm.put("artifactId", "wdnmd");
         vm.put("version", "0.0.1.RELEASE");
-        vm.put("packaging", "jar");
+        vm.put("packageType", "jar");
 
-
+        mapperDependencies(vm);
 
         String app = ModelUtils.render(model, vm);
         codeList.add(new Code(CodeEnum.XML,"pom.xml", app));

@@ -58,21 +58,23 @@ public class EntityHandler implements GenerateHandler {
                 " */\n";
 
         String now = DateTimeUtils.getNowDate("yyyy-MM-dd HH:mm:ss");
-        String description = org.apache.commons.lang3.StringUtils.isEmpty(tableDetail.getComment()) ? tableDetail.getComment() : tableDetail.getTableName();
+        String description = !org.apache.commons.lang3.StringUtils.isEmpty(tableDetail.getComment()) ? tableDetail.getComment() : tableDetail.getTableName();
         description = description + ",存储引擎:" + tableDetail.getEngine() + ",字符集:" + tableDetail.getCharset();
         TITLE = TITLE.replace("{date}", now).replace("{description}", description);
 
         StringUtils.SBuilder body = StringUtils.to(TITLE);
 
-        switch (repositoryType) {
-            case SPRING_DATA_JPA:
-                body.to("@Entity\n@Table(name = \"", tableDetail.getTableName(), "\")");
-                break;
+        if (repositoryType != null) {
+            switch (repositoryType) {
+                case SPRING_DATA_JPA:
+                    body.to("@Entity\n@Table(name = \"", tableDetail.getTableName(), "\")");
+                    break;
 
-            case MYBATIS_PLUS:
-                body.to("@TableName(\"", tableDetail.getTableName(), "\")");
-                break;
+                case MYBATIS_PLUS:
+                    body.to("@TableName(\"", tableDetail.getTableName(), "\")");
+                    break;
 
+            }
         }
 
         body.to("public class ", StringUtils.firstUpper(tableDetail.getEntityName()), " implements Serializable {\n");
@@ -88,7 +90,7 @@ public class EntityHandler implements GenerateHandler {
                 sb.to("\n\t * 所属索引[", columnDetail.getKeyName(), "] {'类型': ", columnDetail.getKey(), ",");
                 sb.to("'结构':", columnDetail.getIndexType(), ",");
                 sb.to("'顺序':", columnDetail.getSeqInIndex().toString(), ",");
-                sb.to("'备注':", columnDetail.getIndexComment(), "}\n");
+                sb.to("'备注':", columnDetail.getIndexComment(), "}");
 
             }
 
@@ -97,31 +99,33 @@ public class EntityHandler implements GenerateHandler {
             }
 
             if (!org.apache.commons.lang3.StringUtils.isEmpty(sb.toString())) {
-                body.to("\n", FIELD.replace("{comment}", sb.toString()), "\n");
+                body.to("\n", FIELD.replace("{comment}", sb.toString()));
             }
 
             Class fieldType = columnDetail.getJavaType();
             IMPORT_CLASS_SET.add(fieldType);
 
-            switch (repositoryType) {
-                case MYBATIS_PLUS:
-                    if (org.apache.commons.lang3.StringUtils.equals(columnDetail.getKey(), "PRI")) {
-                        body.to("@TableId\n");
-                    }
-                    body.to("@TableField(name = \"", columnDetail.getColumn(), "\")");
-                    break;
+            if (repositoryType != null) {
+                switch (repositoryType) {
+                    case MYBATIS_PLUS:
+                        if (org.apache.commons.lang3.StringUtils.equals(columnDetail.getKey(), "PRI")) {
+                            body.to("@TableId\n");
+                        }
+                        body.to("@TableField(name = \"", columnDetail.getColumn(), "\")");
+                        break;
 
-                case DB:
-                case SPRING_DATA_JPA:
-                    if (org.apache.commons.lang3.StringUtils.equals(columnDetail.getKey(), "PRI")) {
-                        body.to("@Id\n");
-                    }
-                    body.to("@Column(name = \"", columnDetail.getColumn(), "\")");
-                    break;
+                    case DB:
+                    case SPRING_DATA_JPA:
+                        if (org.apache.commons.lang3.StringUtils.equals(columnDetail.getKey(), "PRI")) {
+                            body.to("@Id\n");
+                        }
+                        body.to("@Column(name = \"", columnDetail.getColumn(), "\")");
+                        break;
+                }
             }
 
-            body.to("\tprivate\t", fieldType.getSimpleName(), "\t", columnDetail.getProperty());
-            if (org.apache.commons.lang3.StringUtils.isBlank(columnDetail.getDefaultValue()) && !Date.class.isAssignableFrom(fieldType)) {
+            body.to("\n\tprivate\t", fieldType.getSimpleName(), "\t", columnDetail.getProperty());
+            if (!org.apache.commons.lang3.StringUtils.isBlank(columnDetail.getDefaultValue()) && !Date.class.isAssignableFrom(fieldType)) {
                 body.to(" = ");
                 if (String.class.isAssignableFrom(fieldType)) {
                     body.to("\"", columnDetail.getDefaultValue(), "\"");

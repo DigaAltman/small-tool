@@ -11,6 +11,7 @@ public interface SqlTypeCommon {
         VARCHAR(String.class),
         CHAR(String.class),
         BLOB(Byte[].class),
+        INT(Integer.class),
         INTEGER(Long.class),
         TINYINT(Integer.class),
         SMALLINT(Integer.class),

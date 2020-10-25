@@ -2,6 +2,7 @@ package com.diga.orm.handler.pom.ext;
 
 import com.diga.generic.utils.StringUtils;
 import com.diga.orm.handler.pom.AbstractPomHandler;
+import com.diga.orm.handler.properties.ext.MybatisAppHandler;
 import com.diga.orm.pojo.mysql.table.TableDetail;
 
 import java.util.Map;
@@ -10,6 +11,7 @@ public class MybatisPomHandler extends AbstractPomHandler {
 
     public MybatisPomHandler(TableDetail tableDetail) {
         super(tableDetail);
+        super.generateHandler = new MybatisAppHandler(tableDetail);
     }
 
     @Override

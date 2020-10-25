@@ -1,6 +1,7 @@
 package com.diga.orm.handler.properties.ext;
 
 import com.diga.generic.utils.StringUtils;
+import com.diga.orm.handler.dao.ext.MybatisDaoHandler;
 import com.diga.orm.handler.properties.AbstractAppHandler;
 import com.diga.orm.pojo.mysql.table.TableDetail;
 
@@ -9,6 +10,7 @@ import java.util.Map;
 public class MybatisAppHandler extends AbstractAppHandler {
     public MybatisAppHandler(TableDetail tableDetail) {
         super(tableDetail);
+        super.generateHandler = new MybatisDaoHandler(tableDetail);
     }
 
     @Override

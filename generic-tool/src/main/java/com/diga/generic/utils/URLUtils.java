@@ -9,7 +9,7 @@ public class URLUtils {
 	 * @return 返回classpath路径对应的具体路径
 	 */
 	public static String classpath(String path) {
-		return URLUtils.class.getResource("./" + path).getPath();		
+		return URLUtils.class.getResource("/" + path).getPath();
 	}
 
 	/**

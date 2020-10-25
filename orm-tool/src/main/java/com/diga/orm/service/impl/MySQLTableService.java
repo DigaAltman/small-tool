@@ -1,6 +1,5 @@
 package com.diga.orm.service.impl;
 
-import com.diga.orm.common.CodeEnum;
 import com.diga.orm.common.DataBaseEnum;
 import com.diga.orm.common.RepositoryEnum;
 import com.diga.orm.pojo.mysql.column.ColumnComment;
@@ -40,6 +39,7 @@ public class MySQLTableService implements ITableService {
         List<ColumnComment> columnCommentList = tableRepository.getTableFieldComment(tableName);
 
         List<ColumnDetail> columnDetailList = Lists.newLinkedList();
+
         for (ColumnStructure column : columnStructureList) {
             columnDetailList.add(column.ToVO(columnIndexList, columnCommentList));
         }

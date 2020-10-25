@@ -14,7 +14,7 @@ import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 
 public abstract class AbstractDaoHandler implements GenerateHandler {
-    private GenerateHandler generateHandler;
+    protected GenerateHandler generateHandler;
     protected TableDetail tableDetail;
 
     // 主键
@@ -90,7 +90,7 @@ public abstract class AbstractDaoHandler implements GenerateHandler {
         sb.to("     * @return ", returnDesc, "\n");
         sb.to("     */\n");
 
-        sb.to("    ", returnType, methodName, "(");
+        sb.to("    ", returnType, " ", methodName, "(");
 
         CollectionUtils.forEach(paramList, (index, item, itemList) -> {
             sb.to(item.build());
