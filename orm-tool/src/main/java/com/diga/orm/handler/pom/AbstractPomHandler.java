@@ -30,7 +30,7 @@ public abstract class AbstractPomHandler implements GenerateHandler {
         String model = FileUtils.readFile(URLUtils.classpath("model/pom.model"));
         Map<String, Object> vm = new HashMap();
         vm.put("groupId", "org.example");
-        vm.put("artifactId", "wdnmd");
+        vm.put("artifactId", "WDNMD");
         vm.put("version", "0.0.1.RELEASE");
         vm.put("packageType", "jar");
 

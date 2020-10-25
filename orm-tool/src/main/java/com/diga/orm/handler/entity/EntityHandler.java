@@ -28,7 +28,7 @@ public class EntityHandler implements GenerateHandler {
     public void handle(List<Code> codeList) {
         Code code = new Code(CodeEnum.JAVA, tableDetail.getEntityName(), null);
         // TODO package xxx.xxx.entity;
-        StringUtils.SBuilder PACK = StringUtils.to("package xxx.xxx.entity;\n\n");
+        StringUtils.SBuilder PACK = StringUtils.to("\npackage xxx.xxx.entity;\n\n");
         Set<Class> IMPORT_CLASS_SET = new HashSet();
         StringUtils.SBuilder IMPORT = StringUtils.to("import lombok.Data;\n\nimport java.io.Serializable;\n");
 

@@ -519,7 +519,7 @@ public class MybatisDaoHandler extends AbstractDaoHandler {
             }
         });
 
-        return StringUtils.to("package ", super.mapperPackage, ";\n\n").to(importBuilder.toString(), "\n\n").to(bodyBuilder.toString()).toString();
+        return StringUtils.to("\npackage ", super.mapperPackage, ";\n\n").to(importBuilder.toString(), "\n\n").to(bodyBuilder.toString()).toString();
     }
 
 
