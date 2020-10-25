@@ -37,7 +37,7 @@ public abstract class AbstractPomHandler implements GenerateHandler {
         mapperDependencies(vm);
 
         String app = ModelUtils.render(model, vm);
-        codeList.add(new Code(CodeEnum.XML,"pom.xml", app));
+        codeList.add(new Code(CodeEnum.XML,"pom", app));
         
         generateHandler.handle(codeList);
     }

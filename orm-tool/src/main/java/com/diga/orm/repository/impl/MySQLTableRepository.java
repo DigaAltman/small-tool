@@ -95,7 +95,7 @@ public class MySQLTableRepository implements TableRepository {
     @Override
     public TableDetail getTableDetail(String tableName) {
         TableDetail tableDetail = db.selectOne("SELECT TABLE_SCHEMA, TABLE_NAME, ENGINE, VERSION, ROW_FORMAT, TABLE_ROWS, AVG_ROW_LENGTH, DATA_LENGTH, MAX_DATA_LENGTH, INDEX_LENGTH, DATA_FREE, AUTO_INCREMENT, CREATE_TIME, UPDATE_TIME, CHECK_TIME, TABLE_COLLATION, TABLE_COMMENT, CREATE_OPTIONS  FROM information_schema.tables WHERE TABLE_SCHEMA != 'information_schema' AND TABLE_NAME=?", TableDetail.class, tableName);
-        tableDetail.setEntityName(StringUtils.hump(tableDetail.getTableName()));
+        tableDetail.setEntityName(StringUtils.humpFirstUpper(tableDetail.getTableName()));
         return tableDetail;
     }
 }
