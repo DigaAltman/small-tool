@@ -68,4 +68,14 @@ public class UserRepository {
         paramList.add(user.getVersion());
         return db.executeUpdate(sql.toString(), paramList.toArray());
     }
+
+    /**
+     * 根据email查找用户信息, 此方法走唯一索引
+     * @param email
+     * @return
+     */
+    public User selectByEmail(String email) {
+        User user = db.selectOne("SELECT  `user_id`, `username`, `password`, `realname`, `email_address`, `create_time`, `update_time`, `version` FROM `user` WHERE `email_address` = ?", User.class, email);
+        return user;
+    }
 }

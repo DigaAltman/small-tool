@@ -50,6 +50,11 @@ public class UserService {
             return ApiResponse.login("用户名称已经被使用");
         }
 
+        User emailUser = userRepository.selectByEmail(userBO.getEmail());
+        if(emailUser != null) {
+            return ApiResponse.login("邮箱地址已经被使用了");
+        }
+
         User user = userBO.toUser();
         user.setPassword(EncryptionUtil.md5(user.getPassword()));
         user.setUserId(UUID.randomUUID().toString());
@@ -72,4 +77,21 @@ public class UserService {
     }
 
 
+    /**
+     * 根据用户名称重置密码
+     * @param username
+     */
+    public ApiResponse forgetByUsername(String username) {
+        User user = userRepository.selectByUserName(username);
+
+    }
+
+
+    /**
+     * 根据用户绑定的邮箱重置密码
+     * @param email
+     */
+    public ApiResponse forgetByEmail(String email) {
+        User user = userRepository.selectByEmail(email);
+    }
 }

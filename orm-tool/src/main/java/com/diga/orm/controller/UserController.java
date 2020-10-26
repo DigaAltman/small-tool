@@ -10,6 +10,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @RestController
 @RequestMapping("/tab")
@@ -66,8 +68,17 @@ public class UserController {
     }
 
 
-    @GetMapping("/forget")
-    public ApiResponse forget() {
-        return ApiResponse.login();
+    // 根据用户名重置密码
+    @GetMapping("/forgetByUsername")
+    @Validated
+    public ApiResponse forgetByUsername(@NotEmpty(message = "用户名不能为空") String username) {
+        return userService.forgetByUsername(username);
+    }
+
+    // 根据邮箱重置密码
+    @GetMapping("/forgetByEmail")
+    @Validated
+    public ApiResponse forgetByEmail(@NotEmpty(message = "邮箱不能为空") String email) {
+        return userService.forgetByEmail(email);
     }
 }
