@@ -8,7 +8,7 @@ spring:
     # 数据源类型: HikariCP
     type: com.zaxxer.hikari.HikariDataSource
     # jdbc的url地址
-    url: jdbc:mysql://47.112.125.251:3369/db1?useSSL=false
+    url: jdbc:mysql://47.112.125.251:3369/db1?useUnicode=true&characterEncoding=utf8&useSSL=false
     # 用户名称
     username: db1
     # 用户密码

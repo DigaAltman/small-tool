@@ -24,6 +24,14 @@ public class ApiResponse<T> implements Serializable {
      */
     private T data;
 
+    /**
+     * 请求成功
+     * @return
+     */
+    public boolean statusSuccess() {
+        return this.status == StatusEnum.SUCCESS.getStatus();
+    }
+
     private ApiResponse(int status, String message, T data) {
         this.status = status;
         this.message = message;

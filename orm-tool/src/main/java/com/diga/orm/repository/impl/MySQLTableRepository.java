@@ -42,7 +42,7 @@ public class MySQLTableRepository implements TableRepository {
      */
     @Override
     public List<ColumnStructure> getTableStructure(String tableName) {
-        List<ColumnStructure> columnStructureList = db.selectList(String.format("SHOW COLUMNS FROM %s", tableName), ColumnStructure.class);
+        List<ColumnStructure> columnStructureList = db.selectList(String.format("SHOW COLUMNS FROM `%s`", tableName), ColumnStructure.class);
         return columnStructureList;
     }
 
@@ -60,7 +60,7 @@ public class MySQLTableRepository implements TableRepository {
      */
     @Override
     public List<ColumnIndex> getTableIndex(String tableName) {
-        List<ColumnIndex> tableIndexList = db.selectList(String.format("SHOW INDEX FROM %s", tableName), ColumnIndex.class);
+        List<ColumnIndex> tableIndexList = db.selectList(String.format("SHOW INDEX FROM `%s`", tableName), ColumnIndex.class);
         return tableIndexList;
     }
 

@@ -77,7 +77,7 @@ public class EntityHandler implements GenerateHandler {
             }
         }
 
-        body.to("public class ", StringUtils.firstUpper(tableDetail.getEntityName()), " implements Serializable {\n");
+        body.to("@Data\npublic class ", StringUtils.firstUpper(tableDetail.getEntityName()), " implements Serializable {\n");
 
         String FIELD = "\t/**{comment}\n" +
                 "\t */";
