@@ -19,6 +19,9 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private MailService mailService;
+
     /**
      * 用户登陆
      *
@@ -51,7 +54,7 @@ public class UserService {
         }
 
         User emailUser = userRepository.selectByEmail(userBO.getEmail());
-        if(emailUser != null) {
+        if (emailUser != null) {
             return ApiResponse.login("邮箱地址已经被使用了");
         }
 
@@ -79,19 +82,37 @@ public class UserService {
 
     /**
      * 根据用户名称重置密码
+     *
      * @param username
      */
     public ApiResponse forgetByUsername(String username) {
         User user = userRepository.selectByUserName(username);
+        if (user == null) {
+            return ApiResponse.login("用户不存在");
+        }
 
+        String emailAddress = user.getEmailAddress();
+        if (StringUtils.isBlank(emailAddress)) {
+            return ApiResponse.login("用户没有绑定邮箱,无法找回密码");
+        }
+
+        // TODO 发送验证码到邮箱
+        return ApiResponse.success();
     }
 
 
     /**
      * 根据用户绑定的邮箱重置密码
+     *
      * @param email
      */
     public ApiResponse forgetByEmail(String email) {
         User user = userRepository.selectByEmail(email);
+        if (user == null) {
+            return ApiResponse.login("用户不存在");
+        }
+
+        // TODO 发送验证码到邮箱
+        return ApiResponse.success();
     }
 }

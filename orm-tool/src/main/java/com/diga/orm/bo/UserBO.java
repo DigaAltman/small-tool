@@ -4,6 +4,7 @@ import com.diga.orm.pojo.work.User;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 
@@ -32,6 +33,7 @@ public class UserBO implements Serializable {
     /**
      * 绑定邮箱
      */
+    @Email(message = "邮箱格式不正确")
     private String email;
 
     /**
