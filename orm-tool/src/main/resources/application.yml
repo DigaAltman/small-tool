@@ -12,8 +12,10 @@ spring:
     # 客户端授权码,不是邮箱密码,网易的是自己设置的
     password: TZKWDBYHEGFILEVM
     # 465或者994
-    properties.mail.smtp.port: 994
+    properties.mail.smtp.port: 465
     # 发送邮件的发送方用户名
+    nickname: STool官方
+
     from: 15113437287@163.com
     properties.mail.smtp.starttls.enable: true
     properties.mail.smtp.starttls.required: true

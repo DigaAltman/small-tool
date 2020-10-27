@@ -230,7 +230,8 @@ public class DB {
         if (res.size() > 1) {
             throw new IllegalArgumentException("返回的结果不止一条");
         }
-        return res.get(0);
+
+        return res.size() > 0 ? res.get(0) : null;
     }
 
 

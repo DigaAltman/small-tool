@@ -26,7 +26,6 @@ public class UserBO implements Serializable {
     /**
      * 确认密码
      */
-    @NotEmpty(message = "确认密码不能为空")
     @Range(min = 6, message = "密码长度不能低于6位")
     private String confirmPassword;
 

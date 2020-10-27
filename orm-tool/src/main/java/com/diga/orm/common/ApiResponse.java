@@ -63,6 +63,15 @@ public class ApiResponse<T> implements Serializable {
         return new ApiResponse(StatusEnum.SUCCESS.status, StatusEnum.SUCCESS.message, data);
     }
 
+    /**
+     * 包含消息的空内容成功返回
+     *
+     * @param <T>
+     * @return
+     */
+    public static <T> ApiResponse<T> success(String message) {
+        return new ApiResponse(StatusEnum.SUCCESS.status, message, null);
+    }
 
     /**
      * 不包含内容的服务器错误返回

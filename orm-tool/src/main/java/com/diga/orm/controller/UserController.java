@@ -6,15 +6,14 @@ import com.diga.orm.common.WorkCommon;
 import com.diga.orm.service.impl.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 @RestController
-@RequestMapping("/tab")
+@RequestMapping("/user")
 public class UserController {
 
     @Autowired
@@ -22,7 +21,7 @@ public class UserController {
 
 
     @PostMapping("/login")
-    public ApiResponse login(@RequestParam(name = "user") @RequestBody @Validated UserBO userBO, HttpSession session) {
+    public ApiResponse login(@RequestBody @Valid UserBO userBO, HttpSession session) {
 
         if (StringUtils.equals(userBO.getPassword(), userBO.getConfirmPassword())) {
             ApiResponse response = userService.login(userBO.getUsername(), userBO.getPassword());
@@ -53,14 +52,14 @@ public class UserController {
 
         if (user != null) {
             session.removeAttribute(WorkCommon.CURRENT_USER);
-            return ApiResponse.success();
+            return ApiResponse.success("用户退出成功");
         }
 
         return ApiResponse.login();
     }
 
     @PostMapping("/register")
-    public ApiResponse register(UserBO userBO) {
+    public ApiResponse register(@RequestBody @Valid UserBO userBO) {
         if (!StringUtils.equals(userBO.getPassword(), userBO.getConfirmPassword())) {
             return ApiResponse.authority("输入的两次密码不一致");
         }
@@ -70,15 +69,36 @@ public class UserController {
 
     // 根据用户名重置密码
     @GetMapping("/forgetByUsername")
-    @Validated
-    public ApiResponse forgetByUsername(@NotEmpty(message = "用户名不能为空") String username) {
-        return userService.forgetByUsername(username);
+    @Valid
+    public ApiResponse forgetByUsername(HttpSession session, @NotEmpty(message = "用户名不能为空") String username) {
+        return userService.forgetByUsername(username, session);
     }
 
     // 根据邮箱重置密码
     @GetMapping("/forgetByEmail")
-    @Validated
-    public ApiResponse forgetByEmail(@NotEmpty(message = "邮箱不能为空") String email) {
-        return userService.forgetByEmail(email);
+    @Valid
+    public ApiResponse forgetByEmail(HttpSession session, @NotEmpty(message = "邮箱不能为空") String email) {
+        return userService.forgetByEmail(email, session);
     }
+
+
+    // 重置密码
+    @PostMapping("/reset")
+    public ApiResponse reset(HttpSession session, String password, String confirmPassword) {
+        Object token = session.getAttribute("token");
+        if (token == null) {
+            return ApiResponse.token("没有重置密码的权限授权码");
+        }
+
+        if (StringUtils.isBlank(password)) {
+            return ApiResponse.validation("密码不能为空");
+        }
+
+        if (!StringUtils.equals(password, confirmPassword)) {
+            return ApiResponse.validation("两次密码不一致");
+        }
+
+        return userService.reset(token.toString(), password);
+    }
+
 }
