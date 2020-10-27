@@ -1,8 +1,16 @@
 package com.diga.orm.service.impl;
 
+import com.diga.generic.utils.ClassUtils;
 import com.diga.generic.utils.CollectionUtils;
+import com.diga.orm.common.ApiResponse;
+import com.diga.orm.common.WorkCommon;
+import com.diga.orm.config.DatabaseManager;
 import com.diga.orm.pojo.mysql.database.DataBaseParamValue;
+import com.diga.orm.pojo.work.Database;
+import com.diga.orm.pojo.work.DatabaseGroup;
 import com.diga.orm.repository.DataBaseRepository;
+import com.diga.orm.repository.impl.DataBaseGroupRepository;
+import com.diga.orm.repository.impl.DatabaseRepository;
 import com.diga.orm.repository.impl.MySQLDataBaseRepository;
 import com.diga.orm.service.DataBaseService;
 import com.diga.orm.vo.DataBaseDetail;
@@ -12,6 +20,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +33,9 @@ public class MySQLDataBaseService implements DataBaseService {
     @Autowired
     @Qualifier("mySQLDataBaseRepository")
     private DataBaseRepository dataBaseRepository;
+
+    @Autowired
+    private DataBaseGroupRepository dataBaseGroupRepository;
 
 
     /**
@@ -40,6 +54,7 @@ public class MySQLDataBaseService implements DataBaseService {
      * @return
      */
     public List<DataBaseDetail> getAllDataBase() {
+
         return dataBaseRepository.getAllDataBase();
     }
 
@@ -87,4 +102,45 @@ public class MySQLDataBaseService implements DataBaseService {
     }
 
 
+    /**
+     * 获取所有的数据库组信息,包括数据库组下的数据库信息
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public List<DatabaseGroup> getDataBaseGroupList(String userId) {
+        return dataBaseGroupRepository.selectDataBaseGroupByUserId(userId);
+    }
+
+    @Autowired
+    private DatabaseRepository databaseRepository;
+
+    /**
+     * 获取数据库的信息, 并设置为线程级别的共享对象
+     *
+     * @param databaseId
+     * @return
+     */
+    @Override
+    public ApiResponse buildDataBaseToSession(String databaseId, String userId) {
+        Database database = databaseRepository.selectByUserIdAndDatabaseId(userId, databaseId);
+        if (database == null) {
+            return ApiResponse.validation("找不到这个数据库信息");
+        }
+
+        Connection connection = null;
+        try {
+            if (database.getProductType() == WorkCommon.SQLProductType.MYSQL.getCode()) {
+                ClassUtils.tryForName("com.mysql.jdbc.Driver");
+            } else if (database.getProductType() == WorkCommon.SQLProductType.ORACLE.getCode()) {
+                ClassUtils.tryForName("oracle.JDBC.driver.OracleDriver");
+            }
+            connection = DriverManager.getConnection(database.getUrl(), database.getUsername(), database.getPassword());
+        } catch (SQLException e) {
+            return ApiResponse.validation("构建数据源出错,请检查数据库配置");
+        }
+        DatabaseManager.set(connection);
+        return ApiResponse.success();
+    }
 }

@@ -1,6 +1,9 @@
 package com.diga.orm.service;
 
+import com.diga.orm.common.ApiResponse;
 import com.diga.orm.pojo.mysql.database.DataBaseParamValue;
+import com.diga.orm.pojo.work.Database;
+import com.diga.orm.pojo.work.DatabaseGroup;
 import com.diga.orm.vo.DataBaseDetail;
 
 import java.util.List;
@@ -13,4 +16,7 @@ public interface DataBaseService {
 
     DataBaseDetail databaseSimpleDetail();
 
+    List<DatabaseGroup> getDataBaseGroupList(String userId);
+
+    ApiResponse buildDataBaseToSession(String databaseId, String userId);
 }

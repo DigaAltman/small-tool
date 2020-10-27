@@ -1,6 +1,8 @@
 package com.diga.orm.repository.impl;
 
 import com.diga.db.core.DB;
+import com.diga.db.factory.DBFactory;
+import com.diga.orm.config.DatabaseManager;
 import com.diga.orm.configuration.ResultMapFactoryBean;
 import com.diga.orm.pojo.mysql.database.DataBaseParamValue;
 import com.diga.orm.repository.DataBaseRepository;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 
@@ -16,10 +19,18 @@ import java.util.Map;
 public class MySQLDataBaseRepository implements DataBaseRepository {
 
     @Autowired
-    private DB db;
+    private ResultMapFactoryBean resultMapFactoryBean;
+
+    public MySQLDataBaseRepository() {
+
+        DBFactory dbFactory = new DBFactory(DatabaseManager.get());
+        dbFactory.setResultMapFactory(resultMapFactoryBean.getResultMapFactory());
+        db = dbFactory.getDB();
+    }
 
     // 获取数据库详细信息
     public List<DataBaseParamValue> getDataBaseDetail() {
+        DB db;
         return db.selectList("show variables", DataBaseParamValue.class);
     }
 

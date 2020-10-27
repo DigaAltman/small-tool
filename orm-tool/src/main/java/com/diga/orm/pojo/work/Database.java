@@ -1,5 +1,6 @@
 package com.diga.orm.pojo.work;
 
+import com.diga.db.annotation.Transient;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -67,5 +68,6 @@ public class Database implements Serializable {
     /**
      * 版本号
      */
+    @Transient
     private	BigDecimal	version;
 }
