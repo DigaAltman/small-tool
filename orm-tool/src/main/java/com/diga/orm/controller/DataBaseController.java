@@ -27,29 +27,45 @@ public class DataBaseController {
     /**
      * 获取当前用户配置的数据库列表
      *
-     * @param session
+     * @param user 当前用户
      * @return
      */
-    public ApiResponse getDataBaseList(HttpSession session) {
-        Object user = session.getAttribute(WorkCommon.CURRENT_USER);
+    public ApiResponse getDataBaseList(User user) {
         if (user == null) {
             return ApiResponse.authority("当前用户未登录,请前往登录");
         }
 
-        User u = (User) user;
-
-        List<DatabaseGroup> dataBaseVOList = dataBaseService.getDataBaseGroupList(u.getUserId());
+        List<DatabaseGroup> dataBaseVOList = dataBaseService.getDataBaseGroupList(user.getUserId());
         return ApiResponse.success(dataBaseVOList);
     }
 
+    /**
+     * 获取当前数据库的详细信息
+     *
+     * @param user       当前登录用户
+     * @param databaseId 数据库ID
+     * @return
+     */
     @GetMapping("/detail")
-    public ApiResponse detail() {
+    public ApiResponse detail(User user, String databaseId) {
         DataBaseDetail dataBaseDetail = dataBaseService.databaseSimpleDetail();
         return ApiResponse.success(dataBaseDetail);
     }
 
+    /**
+     * 获取指定数据库的参数信息
+     *
+     * @param user       当前登录用户
+     * @param databaseId 数据库ID
+     * @return
+     */
     @GetMapping("/params")
-    public ApiResponse params() {
+    public ApiResponse params(User user, String databaseId) {
+        if (user == null) {
+            return ApiResponse.authority("当前用户未登录");
+        }
+
+        dataBaseService.buildDataBaseToSession(databaseId, user.getUserId());
         List<DataBaseParamValue> paramValueList = dataBaseService.databaseDetail();
         return ApiResponse.success(paramValueList);
     }
@@ -57,13 +73,12 @@ public class DataBaseController {
     /**
      * 获取指定数据库对应的SQL服务器下的所有数据库信息
      *
-     * @param session
+     * @param user       当前登录用户
      * @param databaseId 数据库ID
      * @return
      */
     @PostMapping("/list")
-    public ApiResponse list(HttpSession session, String databaseId) {
-        User user = (User) session.getAttribute(WorkCommon.CURRENT_USER);
+    public ApiResponse list(User user, String databaseId) {
         if (user == null) {
             return ApiResponse.authority("当前用户未登录");
         }

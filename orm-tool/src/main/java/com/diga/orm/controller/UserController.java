@@ -3,6 +3,7 @@ package com.diga.orm.controller;
 import com.diga.orm.bo.UserBO;
 import com.diga.orm.common.ApiResponse;
 import com.diga.orm.common.WorkCommon;
+import com.diga.orm.pojo.work.User;
 import com.diga.orm.service.impl.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +36,7 @@ public class UserController {
 
 
     @GetMapping("/message")
-    public ApiResponse getCurrentUser(HttpSession session) {
-        Object user = session.getAttribute(WorkCommon.CURRENT_USER);
-
+    public ApiResponse getCurrentUser(User user) {
         if (user != null) {
             return ApiResponse.success(user);
         }
@@ -47,15 +46,13 @@ public class UserController {
 
 
     @GetMapping("/exit")
-    public ApiResponse exit(HttpSession session) {
-        Object user = session.getAttribute(WorkCommon.CURRENT_USER);
-
+    public ApiResponse exit(HttpSession session, User user) {
         if (user != null) {
             session.removeAttribute(WorkCommon.CURRENT_USER);
             return ApiResponse.success("用户退出成功");
         }
 
-        return ApiResponse.login();
+        return ApiResponse.login("用户未登录,无法退出");
     }
 
     @PostMapping("/register")
