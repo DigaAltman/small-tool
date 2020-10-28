@@ -1,13 +1,10 @@
 package com.diga.orm.repository.impl;
 
 import com.diga.db.core.DB;
-import com.diga.generic.utils.StringUtils;
 import com.diga.orm.pojo.work.Database;
 import com.diga.orm.pojo.work.DatabaseGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.util.UUID;
 
 @Repository
 public class DatabaseRepository {
@@ -18,10 +15,10 @@ public class DatabaseRepository {
     /**
      * 根据 数据库id 获取数据库的信息
      *
-     * @param databaseId    数据库id
+     * @param databaseId 数据库id
      * @return
      */
-    public Database selectByPrimary(String databaseId) {
+    public Database selectPrimary(String databaseId) {
         return db.selectOne("SELECT `database_id`, `product_type`, `url`, `username`, `password`, `security_password`, `database_name`, `create_time`, `version` FROM `database` WHERE `database_id` = ?", Database.class, databaseId);
     }
 
@@ -35,10 +32,12 @@ public class DatabaseRepository {
 
     /**
      * 插入数据库配置
+     *
      * @param databaseGroup
      * @return
      */
     public int insert(DatabaseGroup databaseGroup) {
         return db.executeUpdate("INSERT INTO `database_group`(`database_group_id`, `database_group_name`, `user_id`, `create_time`, `update_time`, `version`) VALUES(?, ?, ?, now(), now(), 1)", databaseGroup.getDatabaseGroupId(), databaseGroup.getDatabaseGroupName(), databaseGroup.getUserId());
     }
+
 }

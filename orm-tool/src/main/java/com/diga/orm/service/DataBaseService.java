@@ -21,4 +21,8 @@ public interface DataBaseService {
     ApiResponse buildDataBaseToSession(String databaseId, String userId);
 
     ApiResponse add(String userId, String groupName);
+
+    ApiResponse containsDataBaseGroup(String userId, String databaseGroupName);
+
+    ApiResponse updateDataBaseGroup(String userId, String databaseGroupId, String databaseGroupName, int version);
 }

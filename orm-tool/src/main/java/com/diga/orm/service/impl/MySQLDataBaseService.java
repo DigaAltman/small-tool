@@ -15,6 +15,7 @@ import com.diga.orm.repository.impl.MySQLDataBaseRepository;
 import com.diga.orm.service.DataBaseService;
 import com.diga.orm.vo.DataBaseDetail;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -154,9 +155,56 @@ public class MySQLDataBaseService implements DataBaseService {
         databaseGroup.setDatabaseGroupName(groupName);
 
         int status = databaseRepository.insert(databaseGroup);
-        if(status > 0) {
+        if (status > 0) {
             return ApiResponse.success("添加数据库成功");
         }
         return ApiResponse.server("数据库添加失败");
+    }
+
+    @Override
+    public ApiResponse containsDataBaseGroup(String userId, String databaseGroupName) {
+        int count = dataBaseGroupRepository.containsByUserIdAndDataBaseGroupName(userId, databaseGroupName);
+        if (count > 0) {
+            return ApiResponse.validation("数据库组名称已经存在!!");
+        }
+        return ApiResponse.success();
+    }
+
+    /**
+     * 修改数据库中的数据库组的名称
+     *
+     * @param userId
+     * @param databaseGroupId
+     * @param databaseGroupName
+     * @return
+     */
+    @Override
+    public ApiResponse updateDataBaseGroup(String userId, String databaseGroupId, String databaseGroupName, int version) {
+        DatabaseGroup databaseGroup = dataBaseGroupRepository.selectPrimary(databaseGroupId);
+        if (databaseGroup == null) {
+            return ApiResponse.error("数据库组不存在");
+        }
+
+        // 涉及到横向越权
+        if (!StringUtils.equals(databaseGroup.getUserId(), userId)) {
+            return ApiResponse.authority("当前用户不存在这个数据库组");
+        }
+
+        int count = dataBaseGroupRepository.containsByUserIdAndDataBaseGroupName(userId, databaseGroupName);
+        if (count > 0) {
+            return ApiResponse.authority("数据库组名称已经存在");
+        }
+
+        databaseGroup.setDatabaseGroupName(databaseGroupName);
+
+        // 乐观锁机制,避免重复提交修改请求造成的数据混乱
+        int status = dataBaseGroupRepository.updateByVersion(databaseGroup, version);
+
+        if (status > 0) {
+            // 因为 version 已经改变,并且数据可能存在并发修改问题. 我们需要拿到最新版本
+            return ApiResponse.success(dataBaseGroupRepository.selectPrimary(databaseGroupId));
+        }
+
+        return ApiResponse.error("修改数据库组名称失败");
     }
 }

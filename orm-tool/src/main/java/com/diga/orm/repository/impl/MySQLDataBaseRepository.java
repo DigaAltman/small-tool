@@ -21,9 +21,6 @@ public class MySQLDataBaseRepository implements DataBaseRepository {
 
     private DB db;
 
-    @Autowired
-    private ResultMapFactoryBean resultMapFactoryBean;
-
     // 获取数据库详细信息
     @SetDB
     public List<DataBaseParamValue> getDataBaseDetail() {
