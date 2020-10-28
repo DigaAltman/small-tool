@@ -19,4 +19,6 @@ public interface DataBaseService {
     List<DatabaseGroup> getDataBaseGroupList(String userId);
 
     ApiResponse buildDataBaseToSession(String databaseId, String userId);
+
+    ApiResponse add(String userId, String groupName);
 }

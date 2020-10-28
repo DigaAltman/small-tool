@@ -1,9 +1,13 @@
 package com.diga.orm.repository.impl;
 
 import com.diga.db.core.DB;
+import com.diga.generic.utils.StringUtils;
 import com.diga.orm.pojo.work.Database;
+import com.diga.orm.pojo.work.DatabaseGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.util.UUID;
 
 @Repository
 public class DatabaseRepository {
@@ -29,4 +33,12 @@ public class DatabaseRepository {
         return db.selectOne("SELECT d.database_id,d.url,d.username,d.security_password,d.database_name,d.product_type,d.version,d.create_time FROM (SELECT user_id AS uid FROM `user` WHERE user_id=?) u LEFT JOIN `database_group` dg ON u.`uid`=dg.`user_id` LEFT JOIN `database` d ON dg.`database_group_id`=d.`database_group_id` WHERE d.database_id=?", Database.class, userId, databaseId);
     }
 
+    /**
+     * 插入数据库配置
+     * @param databaseGroup
+     * @return
+     */
+    public int insert(DatabaseGroup databaseGroup) {
+        return db.executeUpdate("INSERT INTO `database_group`(`database_group_id`, `database_group_name`, `user_id`, `create_time`, `update_time`, `version`) VALUES(?, ?, ?, now(), now(), 1)", databaseGroup.getDatabaseGroupId(), databaseGroup.getDatabaseGroupName(), databaseGroup.getUserId());
+    }
 }

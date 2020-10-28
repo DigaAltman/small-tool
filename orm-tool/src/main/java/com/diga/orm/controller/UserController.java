@@ -6,15 +6,19 @@ import com.diga.orm.common.WorkCommon;
 import com.diga.orm.pojo.work.User;
 import com.diga.orm.service.impl.UserService;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
 @RestController
 @RequestMapping("/user")
+@Validated
 public class UserController {
 
     @Autowired
@@ -22,15 +26,13 @@ public class UserController {
 
 
     @PostMapping("/login")
-    public ApiResponse login(@RequestBody @Valid UserBO userBO, HttpSession session) {
-
-        if (StringUtils.equals(userBO.getPassword(), userBO.getConfirmPassword())) {
-            ApiResponse response = userService.login(userBO.getUsername(), userBO.getPassword());
-            if (response.statusSuccess()) {
-                Object user = response.getData();
-                session.setAttribute(WorkCommon.CURRENT_USER, user);
-            }
+    public ApiResponse login(@Validated(UserBO.Login.class) @RequestBody UserBO userBO, HttpSession session) {
+        ApiResponse response = userService.login(userBO.getUsername(), userBO.getPassword());
+        if (response.statusSuccess()) {
+            Object user = response.getData();
+            session.setAttribute(WorkCommon.CURRENT_USER, user);
         }
+
         return ApiResponse.authority("输入的两次密码不一致");
     }
 
@@ -56,7 +58,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ApiResponse register(@RequestBody @Valid UserBO userBO) {
+    public ApiResponse register(@Validated(UserBO.Register.class) @RequestBody UserBO userBO) {
         if (!StringUtils.equals(userBO.getPassword(), userBO.getConfirmPassword())) {
             return ApiResponse.authority("输入的两次密码不一致");
         }
@@ -67,21 +69,33 @@ public class UserController {
     // 根据用户名重置密码
     @GetMapping("/forgetByUsername")
     @Valid
-    public ApiResponse forgetByUsername(HttpSession session, @NotEmpty(message = "用户名不能为空") String username) {
+    public ApiResponse forgetByUsername(
+            HttpSession session,
+            @NotEmpty(message = "用户名不能为空")
+            @Range(min = 6, max = 12, message = "用户名有效长度 [6-12] 位") String username) {
         return userService.forgetByUsername(username, session);
     }
 
     // 根据邮箱重置密码
     @GetMapping("/forgetByEmail")
     @Valid
-    public ApiResponse forgetByEmail(HttpSession session, @NotEmpty(message = "邮箱不能为空") String email) {
+    public ApiResponse forgetByEmail(
+            HttpSession session,
+            @NotEmpty(message = "邮箱不能为空")
+            @Email(message = "邮箱格式不正确")
+            @Range(min = 0, max = 50, message = "邮箱邮箱长度位 [0-50] 位") String email) {
         return userService.forgetByEmail(email, session);
     }
 
 
     // 重置密码
     @PostMapping("/reset")
-    public ApiResponse reset(HttpSession session, String password, String confirmPassword) {
+    public ApiResponse reset(HttpSession session,
+                             @NotEmpty(message = "密码不能为空")
+                             @Range(min = 6, max = 12, message = "密码有效长度为 [6-12] 位") String password,
+
+                             @NotEmpty(message = "确认密码不能为空")
+                             @Range(min = 6, max = 12, message = "密码有效长度为 [6-12] 位") String confirmPassword) {
         Object token = session.getAttribute("token");
         if (token == null) {
             return ApiResponse.token("没有重置密码的权限授权码");

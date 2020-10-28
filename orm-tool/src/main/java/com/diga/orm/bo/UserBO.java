@@ -13,20 +13,22 @@ public class UserBO implements Serializable {
     /**
      * 用户名称
      */
-    @NotEmpty(message = "用户名不能为空")
+    @NotEmpty(message = "用户名不能为空", groups = {Login.class, Register.class})
+    @Range(min = 6, max = 12, message = "用户名有效长度 [6-12] 位", groups = {Login.class, Register.class})
     private String username;
 
     /**
      * 密码
      */
-    @NotEmpty(message = "密码不能为空")
-    @Range(min = 6, message = "密码长度不能低于6位")
+    @NotEmpty(message = "密码不能为空", groups = {Login.class, Register.class})
+    @Range(min = 6, message = "密码长度不能低于6位", groups = {Login.class, Register.class})
     private String password;
 
     /**
      * 确认密码
      */
-    @Range(min = 6, message = "密码长度不能低于6位")
+    @NotEmpty(message = "密码不能为空", groups = {Register.class})
+    @Range(min = 6, message = "密码长度不能低于6位", groups = {Register.class})
     private String confirmPassword;
 
     /**
@@ -49,4 +51,15 @@ public class UserBO implements Serializable {
         user.setEmailAddress(email);
         return user;
     }
+
+    // 登录
+    public interface Login {
+
+    }
+
+    // 注册
+    public interface Register {
+
+    }
+
 }

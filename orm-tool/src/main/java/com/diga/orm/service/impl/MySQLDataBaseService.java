@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service("mySQLDataBaseService")
 public class MySQLDataBaseService implements DataBaseService {
@@ -142,5 +143,20 @@ public class MySQLDataBaseService implements DataBaseService {
         }
         DatabaseManager.set(connection);
         return ApiResponse.success();
+    }
+
+
+    @Override
+    public ApiResponse add(String userId, String groupName) {
+        DatabaseGroup databaseGroup = new DatabaseGroup();
+        databaseGroup.setUserId(userId);
+        databaseGroup.setDatabaseGroupId(UUID.randomUUID().toString());
+        databaseGroup.setDatabaseGroupName(groupName);
+
+        int status = databaseRepository.insert(databaseGroup);
+        if(status > 0) {
+            return ApiResponse.success("添加数据库成功");
+        }
+        return ApiResponse.server("数据库添加失败");
     }
 }
