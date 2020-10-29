@@ -5,7 +5,7 @@ import com.diga.generic.utils.JsonUtils;
 import com.diga.orm.bo.UserBO;
 import com.diga.orm.common.ApiResponse;
 import com.diga.orm.pojo.work.User;
-import com.diga.orm.repository.impl.UserRepository;
+import com.diga.orm.repository.UserRepository;
 import com.diga.orm.vo.Token;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

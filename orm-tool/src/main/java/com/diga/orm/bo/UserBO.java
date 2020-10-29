@@ -1,6 +1,8 @@
 package com.diga.orm.bo;
 
 import com.diga.orm.pojo.work.User;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 
@@ -8,11 +10,13 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 
+@ApiModel(value = "用户对象BO", description = "前端传入的用户注册的信息转换的实体")
 @Data
 public class UserBO implements Serializable {
     /**
      * 用户名称
      */
+    @ApiModelProperty("用户名称")
     @NotEmpty(message = "用户名不能为空", groups = {Login.class, Register.class})
     @Range(min = 6, max = 12, message = "用户名有效长度 [6-12] 位", groups = {Login.class, Register.class})
     private String username;
@@ -20,6 +24,7 @@ public class UserBO implements Serializable {
     /**
      * 密码
      */
+    @ApiModelProperty("用户密码")
     @NotEmpty(message = "密码不能为空", groups = {Login.class, Register.class})
     @Range(min = 6, message = "密码长度不能低于6位", groups = {Login.class, Register.class})
     private String password;
@@ -27,6 +32,7 @@ public class UserBO implements Serializable {
     /**
      * 确认密码
      */
+    @ApiModelProperty("二次输入的密码")
     @NotEmpty(message = "密码不能为空", groups = {Register.class})
     @Range(min = 6, message = "密码长度不能低于6位", groups = {Register.class})
     private String confirmPassword;
@@ -34,12 +40,14 @@ public class UserBO implements Serializable {
     /**
      * 绑定邮箱
      */
+    @ApiModelProperty("用户绑定的邮箱")
     @Email(message = "邮箱格式不正确")
     private String email;
 
     /**
      * 用户的昵称
      */
+    @ApiModelProperty("用户昵称")
     private String nickname;
 
 
@@ -54,12 +62,10 @@ public class UserBO implements Serializable {
 
     // 登录
     public interface Login {
-
     }
 
     // 注册
     public interface Register {
-
     }
 
 }

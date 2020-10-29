@@ -1,4 +1,4 @@
-package com.diga.orm.repository.impl;
+package com.diga.orm.repository;
 
 import com.diga.db.core.DB;
 import com.diga.orm.pojo.work.User;

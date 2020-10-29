@@ -8,21 +8,18 @@ import com.diga.orm.pojo.mysql.column.ColumnStructure;
 import com.diga.orm.pojo.mysql.table.TableDetail;
 import com.diga.orm.repository.TableRepository;
 import com.diga.orm.service.GenerateDispatch;
-import com.diga.orm.service.ITableService;
 import com.diga.orm.vo.Code;
 import com.diga.orm.vo.ColumnDetail;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class MySQLTableService implements ITableService {
+public class TableService {
 
     @Autowired
-    @Qualifier("mySQLTableRepository")
     private TableRepository tableRepository;
 
 

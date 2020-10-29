@@ -4,7 +4,7 @@ import com.diga.db.annotation.Transient;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 import java.math.BigDecimal;
 
 /**
