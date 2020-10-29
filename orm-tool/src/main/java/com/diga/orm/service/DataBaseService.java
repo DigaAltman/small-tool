@@ -25,4 +25,6 @@ public interface DataBaseService {
     ApiResponse containsDataBaseGroup(String userId, String databaseGroupName);
 
     ApiResponse updateDataBaseGroup(String userId, String databaseGroupId, String databaseGroupName, int version);
+
+    ApiResponse deleteDatabaseGroup(String userId, String databaseGroupId, String validationCode);
 }

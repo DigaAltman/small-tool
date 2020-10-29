@@ -92,7 +92,7 @@ public class DataBaseController {
             return ApiResponse.authority("用户未登录");
         }
 
-        return dataBaseService.deleteDatabaseGroup(databaseGroupId);
+        return dataBaseService.deleteDatabaseGroup(user.getUserId(), databaseGroupId, validationCode);
     }
 
 
@@ -111,6 +111,8 @@ public class DataBaseController {
         List<DatabaseGroup> dataBaseVOList = dataBaseService.getDataBaseGroupList(user.getUserId());
         return ApiResponse.success(dataBaseVOList);
     }
+
+
 
     /**
      * 获取当前数据库的详细信息

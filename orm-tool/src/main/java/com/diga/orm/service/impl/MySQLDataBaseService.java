@@ -207,4 +207,37 @@ public class MySQLDataBaseService implements DataBaseService {
 
         return ApiResponse.error("修改数据库组名称失败");
     }
+
+    /**
+     * 删除数据库组
+     *
+     * @param userId          用户id
+     * @param databaseGroupId 数据库组id
+     * @param validationCode  数据库组名称效验码
+     * @return
+     */
+    @Override
+    public ApiResponse deleteDatabaseGroup(String userId, String databaseGroupId, String validationCode) {
+        DatabaseGroup databaseGroup = dataBaseGroupRepository.selectPrimary(databaseGroupId);
+
+        if (databaseGroup == null) {
+            return ApiResponse.error("数据库组不存在");
+        }
+
+        // 涉及到横向越权
+        if (!StringUtils.equals(databaseGroup.getUserId(), userId)) {
+            return ApiResponse.authority("当前用户不存在这个数据库组");
+        }
+
+        if (!databaseGroup.getDatabaseGroupName().equals(validationCode)) {
+            return ApiResponse.authority("效验码错误");
+        }
+
+        int status = dataBaseGroupRepository.deletePrimary(databaseGroupId);
+        if (status > 0) {
+            return ApiResponse.success("删除数据库组成功");
+        }
+
+        return ApiResponse.error("删除数据库组失败");
+    }
 }

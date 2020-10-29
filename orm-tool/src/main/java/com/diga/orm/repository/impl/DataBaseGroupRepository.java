@@ -56,4 +56,14 @@ public class DataBaseGroupRepository {
     public int updateByVersion(DatabaseGroup databaseGroup, int version) {
         return db.executeUpdate("UPDATE `database_group` SET `database_group_name` = ?,`update_time` = now(),`version` = `version` + 1 WHERE `database_group_id` = ? AND `version` = ?", databaseGroup.getDatabaseGroupName(), databaseGroup.getDatabaseGroupId(), version);
     }
+
+    /**
+     * 基于主键删除数据库组
+     *
+     * @param databaseGroupId
+     * @return
+     */
+    public int deletePrimary(String databaseGroupId) {
+        return db.executeUpdate("DELETE FROM `database_group` WHERE `database_group_id` = ? LIMIT 1", databaseGroupId);
+    }
 }
