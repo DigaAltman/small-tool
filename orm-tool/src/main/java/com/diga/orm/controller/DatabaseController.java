@@ -6,6 +6,9 @@ import com.diga.orm.pojo.mysql.database.DataBaseParamValue;
 import com.diga.orm.pojo.work.User;
 import com.diga.orm.service.impl.DatabaseService;
 import com.diga.orm.vo.DataBaseDetail;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/database")
 @Validated
+@Api(value = "数据库", tags = {"数据库接口"})
 public class DatabaseController {
 
     @Autowired
@@ -28,6 +32,7 @@ public class DatabaseController {
      * @return
      */
     @PostMapping("/add")
+    @ApiOperation(value = "在指定的数据库组下添加数据库信息", httpMethod = "POST")
     public ApiResponse add(User user, @RequestBody DatabaseBO databaseBO) {
         if (user == null) {
             return ApiResponse.login("用户未登录");
@@ -44,7 +49,8 @@ public class DatabaseController {
      * @return
      */
     @GetMapping("/detail/{databaseId}")
-    public ApiResponse detail(User user, @PathVariable String databaseId) {
+    @ApiOperation(value = "获取当前数据库的详细信息", httpMethod = "GET")
+    public ApiResponse detail(User user, @ApiParam("数据库ID") @PathVariable String databaseId) {
         if (user == null) {
             return ApiResponse.login("用户未登录");
         }
@@ -66,7 +72,8 @@ public class DatabaseController {
      * @return
      */
     @GetMapping("/params/{databaseId}")
-    public ApiResponse params(User user, @PathVariable String databaseId) {
+    @ApiOperation(value = "获取指定数据库的参数信息", httpMethod = "GET")
+    public ApiResponse params(User user, @ApiParam("数据库ID") @PathVariable String databaseId) {
         if (user == null) {
             return ApiResponse.authority("用户未登录");
         }
