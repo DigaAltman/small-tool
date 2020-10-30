@@ -1,19 +1,19 @@
 package com.diga.orm.pojo.work;
 
 import com.diga.db.annotation.Transient;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
 /**
  * @date        2020-10-26 14:53:21
  * @description database_group,存储引擎:InnoDB,字符集:utf8_general_ci
  */
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class DatabaseGroup implements Serializable {
 
     /**
@@ -46,11 +46,6 @@ public class DatabaseGroup implements Serializable {
     /**
      * 版本号
      */
-    @Transient
     private	BigDecimal	version;
 
-    /**
-     * 数据库组下的数据库名称
-     */
-    private List<Database> databaseList = new ArrayList();
 }

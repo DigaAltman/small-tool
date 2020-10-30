@@ -87,4 +87,21 @@ public class DatabaseController {
         return ApiResponse.success(paramValueList);
     }
 
+    /**
+     * 获取数据库ID下的所有数据库信息
+     *
+     * @param user            当前登录用户
+     * @param databaseGroupId 数据库组ID
+     * @return
+     */
+    @GetMapping("/list/{databaseGroupId}")
+    @ApiOperation(value = "获取数据库ID下的所有数据库信息", httpMethod = "GET")
+    public ApiResponse list(User user, @ApiParam("数据库组ID") @PathVariable String databaseGroupId) {
+        if (user == null) {
+            return ApiResponse.authority("用户未登录");
+        }
+
+        return databaseService.getDatabaseList(user.getUserId(), databaseGroupId);
+    }
+
 }

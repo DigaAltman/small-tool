@@ -18,7 +18,6 @@ public class UserBO implements Serializable {
      */
     @ApiModelProperty("用户名称")
     @NotEmpty(message = "用户名不能为空", groups = {Login.class, Register.class})
-    @Range(min = 6, max = 12, message = "用户名有效长度 [6-12] 位", groups = {Login.class, Register.class})
     private String username;
 
     /**

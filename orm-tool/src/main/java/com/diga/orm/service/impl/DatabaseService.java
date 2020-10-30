@@ -8,10 +8,13 @@ import com.diga.orm.common.WorkCommon;
 import com.diga.orm.config.DatabaseManager;
 import com.diga.orm.pojo.mysql.database.DataBaseParamValue;
 import com.diga.orm.pojo.work.Database;
+import com.diga.orm.pojo.work.DatabaseGroup;
 import com.diga.orm.repository.ConnectionManagerRepository;
+import com.diga.orm.repository.DataBaseGroupRepository;
 import com.diga.orm.repository.DatabaseRepository;
 import com.diga.orm.vo.DataBaseDetail;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +31,9 @@ public class DatabaseService {
 
     @Autowired
     private DatabaseRepository databaseRepository;
+
+    @Autowired
+    private DataBaseGroupRepository dataBaseGroupRepository;
 
     @Autowired
     private ConnectionManagerRepository connectionManagerRepository;
@@ -67,7 +73,7 @@ public class DatabaseService {
             if (database.getProductType() == WorkCommon.SQLProductType.MYSQL.getCode()) {
                 ClassUtils.tryForName("com.mysql.jdbc.Driver");
             } else if (database.getProductType() == WorkCommon.SQLProductType.ORACLE.getCode()) {
-                ClassUtils.tryForName("oracle.JDBC.driver.OracleDriver");
+                ClassUtils.tryForName("oracle.jdbc.driver.OracleDriver");
             }
 
             // 激活数据库会话 Connection 对象
@@ -131,6 +137,32 @@ public class DatabaseService {
      */
     public List<DataBaseParamValue> getDataBaseParamList() {
         return connectionManagerRepository.getDataBaseDetail();
+    }
+
+    /**
+     * 获取当前数据库组信息
+     *
+     * @param userId
+     * @param databaseGroupId
+     * @return
+     */
+    public ApiResponse getDatabaseList(String userId, String databaseGroupId) {
+        DatabaseGroup databaseGroup = dataBaseGroupRepository.selectPrimary(databaseGroupId);
+        if (databaseGroup == null) {
+            return ApiResponse.error("数据库组不存在");
+        }
+
+        // 涉及到横向越权
+        if (!StringUtils.equals(databaseGroup.getUserId(), userId)) {
+            return ApiResponse.authority("当前用户不存在这个数据库组");
+        }
+
+        List<Database> databases = databaseRepository.selectByDataBaseGroupId(databaseGroupId);
+
+        // 擦除密码
+        databases.forEach(d -> d.setPassword(null));
+
+        return ApiResponse.success(databases);
     }
 
 }

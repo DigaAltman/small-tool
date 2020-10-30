@@ -7,6 +7,7 @@ import com.diga.orm.pojo.work.User;
 import com.diga.orm.repository.SqlRepository;
 import com.diga.orm.service.impl.DatabaseService;
 import com.google.common.collect.Lists;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/sql")
-@ApiOperation("SQL在线测试接口")
+@Api(value = "SQL在线测试", tags = {"SQL在线测试接口"})
 public class SQLController {
 
     @Autowired

@@ -36,9 +36,10 @@ public class UserController {
         if (response.statusSuccess()) {
             Object user = response.getData();
             session.setAttribute(WorkCommon.CURRENT_USER, user);
+            return ApiResponse.success(user);
         }
 
-        return ApiResponse.authority("输入的两次密码不一致");
+        return response;
     }
 
 

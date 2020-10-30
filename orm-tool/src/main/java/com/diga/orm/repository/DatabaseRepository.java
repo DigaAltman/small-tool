@@ -5,11 +5,24 @@ import com.diga.orm.pojo.work.Database;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public class DatabaseRepository {
 
     @Autowired
     private DB db;
+
+
+    /**
+     * 根据 databaseGroupId 查询 Database 信息
+     *
+     * @param databaseGroupId 数据库组ID
+     * @return
+     */
+    public List<Database> selectByDataBaseGroupId(String databaseGroupId) {
+        return db.selectList("SELECT `database_id`,`database_group_id`,`product_type`,`url`, `username`, `password`, `database_name`,`security_password`,`create_time`,`update_time`,`version` FROM `database` WHERE `database_group_id` = ?", Database.class, databaseGroupId);
+    }
 
     /**
      * 根据 主键 获取数据库的信息
@@ -30,7 +43,7 @@ public class DatabaseRepository {
      * @return
      */
     public Database selectByUserIdAndDatabaseId(String userId, String databaseId) {
-        return db.selectOne("SELECT d.database_id,d.url,d.username,d.security_password,d.database_name,d.product_type,d.version,d.create_time FROM (SELECT user_id AS uid FROM `user` WHERE user_id=?) u LEFT JOIN `database_group` dg ON u.`uid`=dg.`user_id` LEFT JOIN `database` d ON dg.`database_group_id`=d.`database_group_id` WHERE d.database_id=?", Database.class, userId, databaseId);
+        return db.selectOne("SELECT d.`database_id`, d.`url`, d.`username`, d.`password`, d.`security_password` , d.`database_name`, d.`product_type`, d.`version`, d.`create_time`, d.`update_time` FROM ( SELECT `user_id` AS uid FROM `user` WHERE user_id = ? ) u LEFT JOIN `database_group` dg ON u.`uid` = dg.`user_id` INNER JOIN ( SELECT `database_id`, `database_group_id`, `url`, `username`, `password` , `security_password`, `database_name`, `product_type`, `version`, `create_time` , `update_time` FROM `database` WHERE `database_id` = ? ) d ON dg.`database_group_id` = d.`database_group_id`", Database.class, userId, databaseId);
     }
 
     /**

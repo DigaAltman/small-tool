@@ -72,7 +72,7 @@ public class DataBaseGroupRepository {
      * @return
      */
     public List<DatabaseGroup> selectByUserId(String userId) {
-        return db.selectList("SELECT dg.`database_group_id`,dg.`database_group_name`,d.`product_type`,d.`url`,d.`username`,d.`password`,d.`database_name`,d.`security_password` FROM `database_group` dg LEFT JOIN `database` d ON dg.`database_group_id`=d.`database_group_id` WHERE `user_id`=?", DatabaseGroup.class, userId);
+        return db.selectList("SELECT `database_group_id`, `database_group_name`, `user_id`, `version`, `create_time`, `update_time` FROM `database_group` WHERE `user_id`=?", DatabaseGroup.class, userId);
     }
 
 }
