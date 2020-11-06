@@ -96,4 +96,9 @@ public class TableRepository {
         tableDetail.setEntityName(StringUtils.humpFirstUpper(tableDetail.getTableName()));
         return tableDetail;
     }
+
+    @SetDB
+    public List<String> getTableList() {
+        return db.selectList("show tables", String.class);
+    }
 }

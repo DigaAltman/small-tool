@@ -72,5 +72,4 @@ public class EncryptionUtil {
     public static String encryption(String body) {
         return new String(Base64.getEncoder().encode((DEFAULT_SLAT + StringUtils.reverse(body)).getBytes()));
     }
-
 }

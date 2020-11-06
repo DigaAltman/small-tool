@@ -1,11 +1,13 @@
 package com.diga.orm.pojo.work;
 
+import com.diga.db.annotation.Transient;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @date        2020-10-26 15:07:28
@@ -70,4 +72,10 @@ public class Database implements Serializable {
      * 版本号
      */
     private	BigDecimal	version;
+
+    /**
+     * 当前数据库下的表名称
+     */
+    @Transient
+    private List<String> tableList;
 }

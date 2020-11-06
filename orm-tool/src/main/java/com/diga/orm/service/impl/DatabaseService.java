@@ -12,6 +12,7 @@ import com.diga.orm.pojo.work.DatabaseGroup;
 import com.diga.orm.repository.ConnectionManagerRepository;
 import com.diga.orm.repository.DataBaseGroupRepository;
 import com.diga.orm.repository.DatabaseRepository;
+import com.diga.orm.repository.TableRepository;
 import com.diga.orm.vo.DataBaseDetail;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +38,9 @@ public class DatabaseService {
 
     @Autowired
     private ConnectionManagerRepository connectionManagerRepository;
+
+    @Autowired
+    private TableRepository tableRepository;
 
     /**
      * 添加数据库信息
@@ -159,8 +163,18 @@ public class DatabaseService {
 
         List<Database> databases = databaseRepository.selectByDataBaseGroupId(databaseGroupId);
 
-        // 擦除密码
-        databases.forEach(d -> d.setPassword(null));
+        // 获取每个数据库下的数据表
+        databases.forEach(d -> {
+            // 擦除密码
+            d.setPassword(null);
+
+            String databaseId = d.getDatabaseId();
+
+            // 切换数据源 [这里可能会比较耗时]
+            buildDataBaseToSessionDB(databaseId, userId);
+            List<String> tableList = tableRepository.getTableList();
+            d.setTableList(tableList);
+        });
 
         return ApiResponse.success(databases);
     }
