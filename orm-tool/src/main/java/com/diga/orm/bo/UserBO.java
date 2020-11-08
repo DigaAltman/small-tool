@@ -4,6 +4,7 @@ import com.diga.orm.pojo.work.User;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.Email;
@@ -25,7 +26,7 @@ public class UserBO implements Serializable {
      */
     @ApiModelProperty("用户密码")
     @NotEmpty(message = "密码不能为空", groups = {Login.class, Register.class})
-    @Range(min = 6, message = "密码长度不能低于6位", groups = {Login.class, Register.class})
+    @Length(min = 6, message = "密码长度不能低于6位", groups = {Login.class, Register.class})
     private String password;
 
     /**
@@ -33,7 +34,7 @@ public class UserBO implements Serializable {
      */
     @ApiModelProperty("二次输入的密码")
     @NotEmpty(message = "密码不能为空", groups = {Register.class})
-    @Range(min = 6, message = "密码长度不能低于6位", groups = {Register.class})
+    @Length(min = 6, message = "密码长度不能低于6位", groups = {Register.class})
     private String confirmPassword;
 
     /**

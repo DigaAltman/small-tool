@@ -7,6 +7,7 @@ import com.diga.orm.service.impl.DatabaseGroupService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -39,7 +40,7 @@ public class DatabaseGroupController {
                                         @ApiParam("数据库组名称")
                                         @Validated
                                         @NotEmpty(message = "组名称不能为空")
-                                        @Range(min = 1, max = 10, message = "组名称有效长度 [1 - 10] 位") String databaseGroupName) {
+                                        @Length(min = 1, max = 10) String databaseGroupName) {
 
         if (user == null) {
             return ApiResponse.login("用户未登录");
@@ -86,7 +87,7 @@ public class DatabaseGroupController {
                                          @ApiParam("数据库组名称")
                                          @Validated
                                          @NotEmpty(message = "数据库组名称不能为空")
-                                         @Range(min = 1, max = 10, message = "组名称有效长度 [1 - 10] 位") String databaseGroupName,
+                                         @Length(min = 1, max = 10, message = "组名称有效长度 [1 - 10] 位") String databaseGroupName,
 
                                          @ApiParam("数据库组版本号")
                                          @Validated

@@ -35,7 +35,7 @@ public class TableController {
      * @param tableName  数据表名称
      * @return
      */
-    @PostMapping("/structure/{databaseId}/{tableName}")
+    @GetMapping("/structure/{databaseId}/{tableName}")
     @ApiOperation("获取指定数据库下的表的结构")
     public ApiResponse getTableStructure(User user, @ApiParam("数据库ID") @PathVariable String databaseId, @ApiParam("数据表名称") @PathVariable String tableName) {
         if (user == null) {
@@ -82,5 +82,7 @@ public class TableController {
         List<Code> codeList = tableService.generateRepository(tableName);
         return ApiResponse.success(codeList);
     }
+
+
 
 }

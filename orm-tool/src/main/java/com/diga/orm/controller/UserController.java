@@ -9,6 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -84,7 +85,7 @@ public class UserController {
 
             @ApiParam("用户名称")
             @NotEmpty(message = "用户名不能为空")
-            @Range(min = 6, max = 12, message = "用户名有效长度 [6-12] 位") String username) {
+            @Length(min = 6, max = 12, message = "用户名有效长度 [6-12] 位") String username) {
         return userService.forgetByUsername(username, session);
     }
 
@@ -107,18 +108,16 @@ public class UserController {
     @PostMapping("/reset")
     @ApiOperation(value = "重置密码", httpMethod = "POST")
     public ApiResponse reset(HttpSession session,
+                             @ApiParam("效验码")
+                             @NotEmpty(message = "没有重置密码的权限授权码") String token,
+
                              @ApiParam("密码")
                              @NotEmpty(message = "密码不能为空")
-                             @Range(min = 6, max = 12, message = "密码有效长度为 [6-12] 位") String password,
+                             @Length(min = 6, max = 12, message = "密码有效长度为 [6-12] 位") String password,
 
                              @ApiParam("二次输入密码")
                              @NotEmpty(message = "确认密码不能为空")
-                             @Range(min = 6, max = 12, message = "密码有效长度为 [6-12] 位") String confirmPassword) {
-        Object token = session.getAttribute("token");
-        if (token == null) {
-            return ApiResponse.token("没有重置密码的权限授权码");
-        }
-
+                             @Length(min = 6, max = 12, message = "密码有效长度为 [6-12] 位") String confirmPassword) {
         if (StringUtils.isBlank(password)) {
             return ApiResponse.validation("密码不能为空");
         }
@@ -127,7 +126,9 @@ public class UserController {
             return ApiResponse.validation("两次密码不一致");
         }
 
-        return userService.reset(token.toString(), password);
+        return userService.reset(session, token, password);
     }
+
+
 
 }
