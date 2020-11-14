@@ -44,7 +44,7 @@ spring:
     # 自动提交
     auto-commit: true
     # 连接超时的最大时长(毫秒), 超时则被释放(retired)
-    idle-timeout: 600000
+    idle-timeout: 6000000
     # 连接池名称l
     pool-name: DataSourceHikariCP
     # 连接的生命时长(毫秒)

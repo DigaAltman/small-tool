@@ -94,7 +94,7 @@ public class DatabaseController {
      * @param databaseGroupId 数据库组ID
      * @return
      */
-    @GetMapping("/tab/{databaseGroupId}")
+    @GetMapping("/list/{databaseGroupId}")
     @ApiOperation(value = "获取数据库ID下的所有数据库信息", httpMethod = "GET")
     public ApiResponse list(User user, @ApiParam("数据库组ID") @PathVariable String databaseGroupId) {
         if (user == null) {
