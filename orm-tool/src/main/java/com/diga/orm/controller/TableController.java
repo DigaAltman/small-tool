@@ -84,5 +84,18 @@ public class TableController {
     }
 
 
+    @GetMapping("/list/{databaseId}")
+    public ApiResponse getTableList(User user, @ApiParam("数据库ID") @PathVariable String databaseId) {
+        if (user == null) {
+            return ApiResponse.login("用户未登录");
+        }
+
+        ApiResponse status = dataBaseService.buildDataBaseToSessionDB(databaseId, user.getUserId());
+        if (!status.statusSuccess()) {
+            return status;
+        }
+
+        return ApiResponse.success(tableService.getTableList());
+    }
 
 }

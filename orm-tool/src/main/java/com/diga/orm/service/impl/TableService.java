@@ -68,4 +68,11 @@ public class TableService {
         tableDetail.setColumnDetailList(getTableColumnList(tableName));
         return tableDetail;
     }
+
+
+    // 获取数据表的信息
+    public List<String> getTableList() {
+        return tableRepository.getTableList();
+    }
+
 }

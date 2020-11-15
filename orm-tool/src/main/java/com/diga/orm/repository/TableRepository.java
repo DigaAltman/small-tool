@@ -48,13 +48,6 @@ public class TableRepository {
      * 获取数据表的索引信息
      *
      * mysql> SHOW INDEX FROM db1.food_user;
-     * +-----------+------------+--------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
-     * | Table     | Non_unique | Key_name     | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
-     * +-----------+------------+--------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
-     * | food_user |          0 | PRIMARY      |            1 | id          | A         |           2 |     NULL | NULL   |      | BTREE      |         |               |
-     * | food_user |          0 | uni_username |            1 | username    | A         |           2 |     NULL | NULL   | YES  | BTREE      |         |               |
-     * +-----------+------------+--------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
-     * 2 rows in set (0.01 sec)
      */
     @SetDB
     public List<ColumnIndex> getTableIndex(String tableName) {
@@ -66,22 +59,6 @@ public class TableRepository {
      * 获取数据表中字段的备注
      *
      * mysql> SELECT COLUMN_NAME AS column_name, column_comment, column_type, column_key FROM information_schema.COLUMNS WHERE table_name = 'food_user';
-     * +-------------+---------------------------+---------------+------------+
-     * | column_name | column_comment            | column_type   | column_key |
-     * +-------------+---------------------------+---------------+------------+
-     * | id          | 主键id                    | varchar(64)   | PRI        |
-     * | username    | 用户名                    | varchar(32)   | UNI        |
-     * | password    | 密码                      | varchar(64)   |            |
-     * | nickname    | 昵称                      | varchar(32)   |            |
-     * | realname    | 真实姓名                  | varchar(128)  |            |
-     * | face        | 头像图片URL地址           | varchar(1024) |            |
-     * | mobile      | 手机号                    | varchar(32)   |            |
-     * | email       | 邮箱地址                  | varchar(32)   |            |
-     * | sex         | 性别, 0:男,1:女,2:无      | int(11)       |            |
-     * | birthday    | 日期                      | date          |            |
-     * | create_time | 创建时间                  | datetime      |            |
-     * | update_time | 最后一次更新时间          | datetime      |            |
-     * +-------------+---------------------------+---------------+------------+
      * 12 rows in set (0.00 sec)
      */
     @SetDB
