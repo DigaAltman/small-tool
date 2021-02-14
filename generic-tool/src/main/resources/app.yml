@@ -1,0 +1,18 @@
+course:
+  id: 1
+  name: 3-2
+
+# Student 的配置
+student:
+  id:
+    1: 1
+    2: 2
+    xee: 3
+  name:
+    1: Min.Lee
+    2: GGBoy
+    xee: ZuLi
+  sex:
+    1: true
+    2: true
+    xee: false

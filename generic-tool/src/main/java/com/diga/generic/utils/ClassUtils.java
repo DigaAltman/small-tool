@@ -8,40 +8,22 @@ import com.google.common.collect.Sets;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.sql.Blob;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
 
 public class ClassUtils {
-
-    /**
-     * 基本值集合类型
-     */
-    private static Set<Class<?>> basicValueSet = Sets.newHashSet(
-            int.class, Integer.class,
-            double.class, Double.class,
-            float.class, Float.class,
-            long.class, Long.class,
-            short.class, Short.class,
-            boolean.class, Boolean.class,
-            byte.class, Byte.class,
-            Date.class, String.class,
-            BigDecimal.class, Blob.class
-    );
-
-    public static boolean isValueType(Class<?> typeClass) {
-        return basicValueSet.contains(typeClass);
-    }
 
     /**
      * 尝试基于类全路径名称进行类的初始化, 如果初始化失败, 则会返回
@@ -170,6 +152,80 @@ public class ClassUtils {
         return classes;
     }
 
+    /**
+     * 从项目文件获取某包下所有类
+     *
+     * @param filePath 文件路径
+     * @return 类的完整名称
+     */
+    private static List<String> getClassNameByFile(String filePath) {
+        List<String> myClassName = new ArrayList();
+        File file = new File(filePath);
+        File[] childFiles = file.listFiles();
+        for (File childFile : childFiles) {
+            if (childFile.isDirectory()) {
+                myClassName.addAll(getClassNameByFile(childFile.getPath()));
+            } else {
+                String childFilePath = childFile.getPath();
+                if (childFilePath.endsWith(".class")) {
+                    childFilePath = childFilePath.substring(childFilePath.indexOf("\\classes") + 9, childFilePath.lastIndexOf("."));
+                    childFilePath = childFilePath.replace("\\", ".");
+                    myClassName.add(childFilePath);
+                }
+            }
+        }
+
+        return myClassName;
+    }
+
+
+    /**
+     * 获取包路径
+     *
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    private static String getClassPath() throws UnsupportedEncodingException {
+        String url = URLDecoder.decode(ClassUtils.class.getResource("/").getPath(), Charset.defaultCharset().name());
+        if (url.startsWith("/")) {
+            url = url.replaceFirst("/", "");
+        }
+        url = url.replaceAll("/", "\\\\");
+        return url;
+    }
+
+
+    private static final List<Class> classList = new LinkedList();
+
+    // 类就绪后就开始扫描当前路径下的所有类
+    static {
+        try {
+            getClassNameByFile(getClassPath()).forEach(className -> {
+                try {
+                    // 扫描用户路径下的所有类, 将那些不是接口的并且不是抽象类的
+                    Class<?> aClass = Class.forName(className);
+                    if (!aClass.isInterface() && !Modifier.isAbstract(aClass.getModifiers())) {
+                        classList.add(aClass);
+                    }
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            });
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 获取指定类型的实现类, 注意这里的实现类是我们扫描到的项目下的类.
+     * 因为我们不可能扫描所有类, 这太耗时了. 所以我们指挥扫描用户项目下的自定义类
+     *
+     * @param clazz
+     * @return
+     */
+    public static List<Class> getImplementationClass(Class clazz) {
+        return classList.stream().filter(clazz::isAssignableFrom).collect(Collectors.toList());
+    }
 
     /**
      * 以文件的形式来获取包下的所有Class
@@ -218,7 +274,7 @@ public class ClassUtils {
 
     /**
      * 接口动态代理
-     * 这里我们是基于javassist动态代理实现的创建动态代理类
+     * 这里我们是基于 javassist 动态代理实现的创建动态代理类
      *
      * @param proxyClass 代理类
      * @param <T>        代理类类型
@@ -231,7 +287,7 @@ public class ClassUtils {
 
     /**
      * 类动态代理
-     * 这里我们是基于javassist动态代理实现的创建动态代理类
+     * 这里我们是基于 javassist 动态代理实现的创建动态代理类
      *
      * @param instance 代理类实例
      * @param handler  代理处理逻辑

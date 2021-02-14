@@ -4,11 +4,36 @@ import javax.sql.rowset.serial.SerialBlob;
 import java.lang.reflect.*;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 反射工具包, 为了简化反射操作
  */
 public class ReflexUtils {
+    public static final Map<String, Object> singletonMap = new HashMap();
+
+
+    /**
+     * 获取单例对象
+     *
+     * @param clazz
+     * @param <T>
+     * @return
+     */
+    public static <T> T getSingletonInstance(Class<T> clazz) {
+        String name = clazz.getName();
+        Object instance = singletonMap.get(name);
+        if (instance != null) {
+            return (T) instance;
+        }
+        synchronized (name) {
+            if (instance == null) {
+                singletonMap.put(name, tryInstance(clazz));
+            }
+        }
+        return getSingletonInstance(clazz);
+    }
 
     /**
      * 值转换
@@ -16,70 +41,66 @@ public class ReflexUtils {
      * @param value       需要转换的值
      * @param returnClass 转换后的类型
      * @param <T>
-     * @return  返回转换后的结果
+     * @return 返回转换后的结果
      */
     public static <T> T conversionValue(Object value, Class<T> returnClass) {
-        if (ClassUtils.isValueType(returnClass)) {
-            Object returnValue = value;
-            switch (returnClass.getName()) {
-                case "int":
-                case "java.lang.Integer":
-                    returnValue = Integer.parseInt(value.toString());
-                    break;
+        Object returnValue = value;
+        switch (returnClass.getName()) {
+            case "int":
+            case "java.lang.Integer":
+                returnValue = Integer.parseInt(value.toString());
+                break;
 
-                case "double":
-                case "java.lang.Double":
-                    returnValue = Double.parseDouble(value.toString());
-                    break;
+            case "double":
+            case "java.lang.Double":
+                returnValue = Double.parseDouble(value.toString());
+                break;
 
-                case "float":
-                case "java.lang.Float":
-                    returnValue = Float.parseFloat(value.toString());
-                    break;
+            case "float":
+            case "java.lang.Float":
+                returnValue = Float.parseFloat(value.toString());
+                break;
 
-                case "long":
-                case "java.lang.Long":
-                    returnValue = Long.parseLong(value.toString());
-                    break;
+            case "long":
+            case "java.lang.Long":
+                returnValue = Long.parseLong(value.toString());
+                break;
 
-                case "short":
-                case "java.lang.Short":
-                    returnValue = Short.parseShort(value.toString());
-                    break;
+            case "short":
+            case "java.lang.Short":
+                returnValue = Short.parseShort(value.toString());
+                break;
 
-                case "boolean":
-                case "java.lang.Boolean":
-                    returnValue = Boolean.parseBoolean(value.toString());
-                    break;
+            case "boolean":
+            case "java.lang.Boolean":
+                returnValue = Boolean.parseBoolean(value.toString());
+                break;
 
-                case "byte":
-                case "java.lang.Byte":
-                    returnValue = Byte.parseByte(value.toString());
-                    break;
+            case "byte":
+            case "java.lang.Byte":
+                returnValue = Byte.parseByte(value.toString());
+                break;
 
-                case "java.util.Date":
-                    break;
+            case "java.util.Date":
+                break;
 
-                case "java.lang.String":
-                    returnValue = value.toString();
-                    break;
+            case "java.lang.String":
+                returnValue = value.toString();
+                break;
 
-                case "java.math.BigDecimal":
-                    returnValue = new BigDecimal(value.toString());
-                    break;
+            case "java.math.BigDecimal":
+                returnValue = new BigDecimal(value.toString());
+                break;
 
-                case "java.sql.Blob":
-                    try {
-                        returnValue = new SerialBlob(value.toString().getBytes());
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-            }
-            return (T) returnValue;
+            case "java.sql.Blob":
+                try {
+                    returnValue = new SerialBlob(value.toString().getBytes());
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                break;
         }
-
-        return (T) value;
+        return (T) returnValue;
     }
 
 
@@ -94,9 +115,7 @@ public class ReflexUtils {
         T val = null;
         try {
             val = clazz.newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
         return val;

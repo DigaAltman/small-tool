@@ -13,6 +13,8 @@
         <module>test</module>
         <module>mapper-tool</module>
         <module>orm-tool</module>
+        <module>chat-test</module>
+        <module>cache-spring-boot-starter</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -169,5 +171,12 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+
+        <!-- 解析 yaml 文件 -->
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.26</version>
+        </dependency>
     </dependencies>
 </project>

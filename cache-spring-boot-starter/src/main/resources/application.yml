@@ -1,0 +1,4 @@
+# 缓存的配置
+dn:
+  cache:
+    random-time-range: 10
