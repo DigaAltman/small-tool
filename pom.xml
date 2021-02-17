@@ -15,6 +15,7 @@
         <module>orm-tool</module>
         <module>chat-test</module>
         <module>cache-spring-boot-starter</module>
+        <module>kafka</module>
     </modules>
     <packaging>pom</packaging>
 

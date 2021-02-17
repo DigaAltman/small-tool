@@ -27,13 +27,7 @@ public class PropUtils {
      * @return
      */
     public static synchronized KV load(InputStream is) {
-        Properties properties = new Properties();
-        try {
-            properties.load(is);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return new KV(new HashMap<String, String>((Map) properties));
+        return new KV(new HashMap<String, String>((Map) get(is)));
     }
 
     /**
@@ -60,6 +54,17 @@ public class PropUtils {
      */
     public static KV load(String classpath) {
         return load(URLUtils.classpath(classpath));
+    }
+
+
+    public static Properties get(InputStream is) {
+        Properties properties = new Properties();
+        try {
+            properties.load(is);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return properties;
     }
 
 }
