@@ -16,9 +16,9 @@ public interface ICacheSerialize {
     /**
      * 将字符串序列化为 JavaBean
      *
-     * @param json
-     * @param methodReturnType
-     * @param genericTypes
+     * @param json             缓冲中记录的字符串
+     * @param methodReturnType 方法的返回值类型
+     * @param genericTypes     方法返回值类型中标注的泛型
      * @return
      */
     Object deserialization(String json, Class methodReturnType, List<Class> genericTypes);

@@ -42,12 +42,20 @@ public class MethodUtils {
 
         for (int i = 0; i < parameters.length; i++) {
             String paramName = parameters[i].getName();
-            String parameterTypeName = parameters[i].getType().getTypeName();
+            Class<?> parameterType = parameters[i].getType();
+            String parameterTypeName = parameterType.getTypeName();
 
             idBuilder.append(paramName).append(":").append(parameterTypeName);
+
+            // 如果方法存在参数, 并且形参数量=实参数量
             if (args.length == parameters.length) {
                 idBuilder.append("=").append(args[i].toString());
             }
+            // 如果方法存在参数, 并且没有传入参数值
+            else if (args.length == 0) {
+                idBuilder.append("=").append("%s");
+            }
+
             if (i != parameters.length - 1) {
                 idBuilder.append(",");
             }
@@ -160,5 +168,13 @@ public class MethodUtils {
         return returnType;
     }
 
+}
 
+
+class A {
+    public String name;
+
+    public String toString() {
+        return "{\"name\":\"" +this.name+"\"}";
+    }
 }

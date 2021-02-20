@@ -11,13 +11,17 @@ public class CacheBean implements Serializable {
 
     /**
      * 当用户设置此缓存为随机缓存, 此随机时间范围就会生效
-     * timeout = cache.time() + new Random().nextInt(randomTimeRange)
+     * timeout = cache.time() + new Random().nextInt(randomTime)
      */
     @Min(5)
-    private int randomTimeRange = 30;
+    private int randomTime = 30;
+
 
     /**
-     * 默认的缓存所属组前缀
+     * 一次续命时长
      */
-    private String groupNamePrefix = "dn:cache:";
+    @Min(5)
+    private int heatTime = 10;
+
+
 }

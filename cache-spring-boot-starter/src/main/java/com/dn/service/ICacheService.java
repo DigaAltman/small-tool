@@ -46,4 +46,13 @@ public interface ICacheService {
      * @return
      */
     long setCacheTimeout(String cacheName, long cacheTime);
+
+
+    /**
+     * 此缓存是否是不过期缓存
+     *
+     * @param cacheName
+     * @return
+     */
+    boolean isInfiniteTime(String cacheName);
 }

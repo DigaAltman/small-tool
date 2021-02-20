@@ -1,2 +1,27 @@
 # 1. 因为我们这个东西是集成 spring-boot 的, 所以, 我们要拿到所有的 @Cache 标注的方法, 并且转换为 CacheEntity 类存放到缓存中.
 
+# 2. 每个缓存都存在一个静态名称和一个动态名称, 静态名称为: com.diga.service.MyService.selectMyByName(arg1:java.lang.String), 动态
+    名称为 com.diga.service.MyService.selectMyByName(arg1:java.lang.String=diga), 以及这个缓存的所属缓存组名称, 默认使用 @Cache
+    所在类的包名称作为缓存组名称, 比如: com.diga.service.MyService;
+
+# 3. 清除缓存是基于缓存组级别的
+
+
+# 流程:
+    1. 在整个 Spring 环境初始化后, 我们开始对所有 Bean 进行扫描, 对于方法中存在 @Cache 注解的 Bean 进行解析, 解析 @Cache 的所属组和静态缓存名称.
+    将它们抽象为 CacheDefinition 然后存入到系统内存中, 整个扫描过程完毕后, 整理系统内存中的 CacheDefinition 信息, 统计总共存在多少 CacheGroup,
+    直接存入到缓存 _CacheGroups = ['com.example.UserService', 'com.example.MyService',...] 这里面可能出现重复. 但是无所谓
+
+    2. 在程序运行的时候, 标注了 @Cache 注解的 Bean 方法会被 spring-aop 切面, 通过读取这个 @Cache 找到对应的 CacheDefinition, 通过 CacheDefinition
+    读取 Cache 信息, 减少反射次数, 提升程序性能. 这里会根据 @Cache 标注的缓存类型来决定使用哪种缓存处理方式, 然后将缓存的动态名称和所属缓存组保存到 缓存系统中,
+
+        {{CacheGroupName}} = ['cache1', 'cache2',...]
+        cache1 = {"createdTime": 1290321031, "updatedTime":1290321031, "version": 1, "data": [1,2,3,4,5]}
+        cache2 = ...
+    .
+
+    3. 在程序运行的时候, 标注了 @ClearCache 注解的 Bean 方法会被 spring-aop 切面, 通过读取这个 @ClearCache 信息, 找到它对应的缓存所属组名称, 然后清除
+    这个缓存组下所有的缓存
+
+
+Map<String, CacheDefinition>

@@ -1,6 +1,7 @@
 package com.dn.entity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -9,7 +10,8 @@ import java.io.Serializable;
  * 缓存结果包装器
  */
 @Data
-public class CacheResult implements Serializable {
+@NoArgsConstructor
+public class CacheWrapper implements Serializable {
     /**
      * 缓存创建时间
      */
@@ -30,5 +32,18 @@ public class CacheResult implements Serializable {
      * 真正的缓存数据
      */
     private String json;
+
+    /**
+     * 缓存名称
+     */
+    private String key;
+
+    public CacheWrapper(String key, String value) {
+        this.key = key;
+        this.json = value;
+        this.createdTime = System.currentTimeMillis();
+        this.updatedTime = System.currentTimeMillis();
+        this.version = 1;
+    }
 
 }
