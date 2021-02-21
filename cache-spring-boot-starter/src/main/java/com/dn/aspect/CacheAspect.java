@@ -2,6 +2,7 @@ package com.dn.aspect;
 
 import com.diga.generic.utils.MethodUtils;
 import com.diga.generic.utils.ReflexUtils;
+import com.dn.annotation.ClearCache;
 import com.dn.config.CacheManager;
 import com.dn.entity.CacheDefinition;
 import com.dn.entity.CacheWrapper;
@@ -87,6 +88,13 @@ public class CacheAspect {
         Object[] args = jp.getArgs();
 
         Object proceed = jp.proceed(args);
+        ClearCache clearCache = method.getAnnotation(ClearCache.class);
+
+        // 这里是在方法调用完毕后清除缓存
+        String groupName = clearCache.group() == null ? method.getDeclaringClass().getName() : clearCache.group();
+        CacheDefinition cacheDefinition = new CacheDefinition();
+        cacheDefinition.setGroupName(groupName);
+        cacheExecutor.doDelete(cacheDefinition);
 
         return proceed;
     }

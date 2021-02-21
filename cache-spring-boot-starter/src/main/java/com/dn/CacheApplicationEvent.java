@@ -74,6 +74,9 @@ public class CacheApplicationEvent implements ApplicationListener<ContextRefresh
                         log.info("扫描到方法名称为 {} 上存在 @Cache 注解", cacheDefinition.getName());
                     }
                 }
+
+                // 初始化缓存组
+                cacheManager.initCacheGroup();
             }
         }
     }

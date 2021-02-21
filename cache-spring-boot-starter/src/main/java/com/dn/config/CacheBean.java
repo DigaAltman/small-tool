@@ -1,11 +1,12 @@
 package com.dn.config;
 
 import lombok.Data;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import javax.validation.constraints.Min;
 import java.io.Serializable;
 
-// @ConditionalOnProperty(value = "dn.cache")
+@ConditionalOnProperty(value = "spring.dn.cache")
 @Data
 public class CacheBean implements Serializable {
 
@@ -22,6 +23,4 @@ public class CacheBean implements Serializable {
      */
     @Min(5)
     private int heatTime = 10;
-
-
 }
